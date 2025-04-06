@@ -1,4 +1,4 @@
-import java.security.PublicKey;
+import java.util.ArrayList;
 
 public abstract class Enemy {
     protected String name;
@@ -33,5 +33,7 @@ public abstract class Enemy {
         System.out.println(name + " attacked!");
     }
 
-    public void isDefeated(){}
+    public ArrayList drops(){return null;}
+
+
 }

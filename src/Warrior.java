@@ -1,7 +1,9 @@
 public class Warrior extends Character{
-    int speed;
 
-    public Warrior(){
+    private int speed;
+
+    public Warrior(String name){
+        this.name = name;
         this.speed = 30;
         this.health = 30;
         this.attack = 5;
@@ -11,7 +13,37 @@ public class Warrior extends Character{
 
     @Override
     public void getInfo(){
-        System.out.println("Warrior: attack " + this.attack + ", health " + this.health + ", mana " + this.speed + ", weapon: " + this.weapon.getName());
+        super.getInfo();
+        System.out.println(", speed " + this.speed);
     }
-    // warrior va folosi speed pentru a si adauga inca doua ture la batalie
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void throwAxe(Enemy enemy){
+        enemy.health = enemy.defense >= attack + 5 ? enemy.health : enemy.health - attack + 5 + enemy.defense;
+        this.speed -= 11;
+        System.out.println("Warrior threw his axe!");
+    }
+
+    public void useSpeed(){
+        this.speed -= 16;
+    }
+
+    public void gainSpeed(){
+        this.speed += 20;
+        System.out.println("Warrior gained 20 Speed!");
+    }
+
+    public void enhanceSword(){
+        for (Item item : inventory.items) {
+            if (item.name.equals("Dragon Scale")) {
+                weapon.damage += 12;
+                inventory.removeItem(item);
+                break;
+            }
+        }
+    }
+
 }

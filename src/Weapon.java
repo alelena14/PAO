@@ -1,12 +1,14 @@
 
 public class Weapon extends Item {
-    private int damage;
+    public int damage;
     private String type;
+    public int level = 1;
 
-    public Weapon(String name, int damage, String type) {
+    public Weapon(String name, int damage, String type, int value) {
         this.name = name;
         this.damage = damage;
         this.type = type;
+        this.value = value;
     }
 
     @Override

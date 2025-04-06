@@ -1,7 +1,9 @@
 public class Archer extends Character{
-    int energy;
+    private int energy;
+    public int shootsDouble = 0;
 
-    public Archer(){
+    public Archer(String name){
+        this.name = name;
         this.energy = 30;
         this.health = 25;
         this.attack = 8;
@@ -9,9 +11,21 @@ public class Archer extends Character{
         this.weapon = null;
     }
 
-    public void doubleArrows(){
+    @Override
+    public void getInfo(){
+        super.getInfo();
+        System.out.println(", energy " + this.energy);
+    }
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public void doubleArrows(Enemy enemy){
         this.energy -= 16;
         this.attack *= 2;
+        shootsDouble = 2;
+        enemy.health = enemy.defense >= attack ? enemy.health : enemy.health - attack + enemy.defense;
         System.out.println("Archer is shooting Double Arrows!");
     }
 
@@ -20,8 +34,13 @@ public class Archer extends Character{
         System.out.println("Archer gained 20 Energy!");
     }
 
-    @Override
-    public void getInfo(){
-        System.out.println("Archer: attack " + this.attack + ", health " + this.health + ", mana " + this.energy + ", weapon: " + this.weapon.getName());
+    public void enhanceBow(){
+        for (Item item : inventory.items) {
+            if (item.name.equals("Rare Gem")) {
+                weapon.damage += 20;
+                inventory.removeItem(item);
+                break;
+            }
+        }
     }
 }

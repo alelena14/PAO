@@ -2,9 +2,10 @@
 public class HealthPotion extends Item {
     private int healAmount;
 
-    public HealthPotion(int healAmount) {
+    public HealthPotion(int healAmount, int value) {
         this.name = "Health Potion";
         this.healAmount = healAmount;
+        this.value = value;
     }
 
     @Override

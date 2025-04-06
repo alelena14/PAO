@@ -10,7 +10,7 @@ public class Inventory {
     public void removeItem(Item item) {
         if (items.contains(item)) {
             items.remove(item);
-            System.out.println(item.getName() + " was removed from inventory.");
+            System.out.println(item.name + " was removed from inventory.");
         } else {
             System.out.println("Item not found in inventory.");
         }
