@@ -7,7 +7,7 @@ public class Mage extends Character {
         this.mana = 30;
         this.health = 20;
         this.attack = 10;
-        this.defense = 40;
+        this.defense = 5;
         this.weapon = null;
     }
 
@@ -28,13 +28,15 @@ public class Mage extends Character {
         }else {
             this.mana -= 10;
             enemy.health = enemy.defense >= attack + 5 ? enemy.health : enemy.health - (attack + 5) + enemy.defense;
+            enemy.health = Math.max(enemy.health, 0);
             System.out.println("Mage used Fire Spell!");
         }
     }
 
     public void usePoisonSpell(Enemy enemy){
         this.mana -= 12;
-        enemy.health = enemy.defense >= attack ? enemy.health : enemy.health - attack + enemy.defense;;
+        enemy.health = enemy.defense >= attack ? enemy.health : enemy.health - attack + enemy.defense;
+        enemy.health = Math.max(enemy.health, 0);
         enemy.isPoisoned += 2;
         System.out.println("Mage used Poison Spell!");
     }
@@ -46,7 +48,7 @@ public class Mage extends Character {
     }
 
     public void enhanceGrimoire(){
-        for (Item item : inventory.items) {
+        for (Item item : inventory.getItems()) {
             if (item.name.equals("Rare Gem")) {
                 weapon.damage += 20;
                 inventory.removeItem(item);

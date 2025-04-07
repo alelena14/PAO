@@ -20,20 +20,16 @@ public abstract class Enemy {
         return this.health > 0;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void status() {
-        System.out.println(name + " | HP: " + health + ", ATK: " + attack + ", DEF: " + defense +  " Poisoned for " + isPoisoned + " rounds");
-    }
-
     public void attack(Character character){
         character.health = character.defense >= attack ? character.health : character.health - attack +character.defense;
+        character.health = Math.max(character.health, 0);
         System.out.println(name + " attacked!");
     }
 
     public ArrayList drops(){return null;}
 
+    public void getInfo(){
+        System.out.println(this.name + ": attack " + this.attack + ", health " + this.health);
+    }
 
 }

@@ -9,6 +9,7 @@ public class Dragon extends Enemy {
 
     public void breatheFire(Character character) {
         character.health = character.defense >= 40 ? character.health : character.health - 40 + character.defense;
+        character.health = Math.max(character.health, 0);
         this.energy -= 18;
         character.isBurned += 1;
         System.out.println("Dragon breathes fire!");

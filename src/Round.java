@@ -3,10 +3,8 @@ import java.util.Scanner;
 
 public class Round {
 
-    private Character character;
-    private Enemy enemy;
-    private int characterRound;
-    private int enemyRound;
+    private final Character character;
+    private final Enemy enemy;
 
     public Round(Character player, Enemy enemy) {
         this.character = player;
@@ -14,12 +12,12 @@ public class Round {
     }
 
     public void newRound(){
-        characterRound = 1;
-        enemyRound = 1;
+        int characterRound = 1;
+        int enemyRound = 1;
         Scanner scanner = new Scanner(System.in);
 
         // character round
-        while(characterRound > 0){
+        while(characterRound > 0 && character.isAlive()){
 
             if(character.isBurned > 0){
                 character.isBurned -= 1;
@@ -32,15 +30,16 @@ public class Round {
                 System.out.println("Choose a skill:");
                 System.out.println("1) Attack");
                 System.out.println("2) Gain Mana");
+                System.out.println("3) Use Healing Potion");
 
                 boolean canUseFireSpell = ((Mage) character).getMana() >= 10;
                 boolean canUsePoisonSpell = ((Mage) character).getMana() >= 12;
 
                 if (canUseFireSpell) {
-                    System.out.println("3) Use Fire Potion");
+                    System.out.println("4) Use Fire Potion");
                 }
                 if (canUsePoisonSpell) {
-                    System.out.println("4) Use Poison Potion");
+                    System.out.println("5) Use Poison Potion");
                 }
 
                 int opt = scanner.nextInt();
@@ -49,6 +48,17 @@ public class Round {
                     case 1 -> character.attack(enemy);
                     case 2 -> ((Mage) character).gainMana();
                     case 3 -> {
+                        ArrayList potions = character.showPotions();
+                        if(!potions.isEmpty()) {
+                            System.out.println("Choose potion: ");
+                            scanner.nextLine();
+                            int op = scanner.nextInt();
+                            HealthPotion hp = (HealthPotion) potions.get(op);
+                            hp.use(character);
+                            character.inventory.removeItem(hp);
+                        }
+                    }
+                    case 4 -> {
                         if (canUseFireSpell) {
                             ((Mage) character).useFireSpell(enemy);
                         } else {
@@ -56,7 +66,7 @@ public class Round {
                             character.attack(enemy);
                         }
                     }
-                    case 4 -> {
+                    case 5 -> {
                         if (canUsePoisonSpell) {
                             ((Mage) character).usePoisonSpell(enemy);
                         } else {
@@ -74,36 +84,48 @@ public class Round {
 
             // Archer
             } else if (character instanceof Archer) {
-
-                if (((Archer) character).shootsDouble == -1) {
+                int isShooting = ((Archer) character).getShootsDouble();
+                if (isShooting == -1) {
                     character.attack /= 2;
                 }
 
                 System.out.println("Choose a skill:");
                 System.out.println("1) Attack");
                 System.out.println("2) Gain Energy");
+                System.out.println("3) Use Healing Potion");
 
                 boolean canUseDoubleArrows = ((Archer) character).getEnergy() >= 16;
 
                 if (canUseDoubleArrows)
-                    System.out.println("3) Use Double Arrows");
+                    System.out.println("4) Use Double Arrows");
 
                 int opt = scanner.nextInt();
 
                 switch (opt) {
                     case 1 -> {
-                        if (((Archer) character).shootsDouble > 0) {
+                        if (isShooting > 0) {
                             character.attack(enemy);
-                            ((Archer) character).shootsDouble -= 1;
+                            ((Archer) character).setShootsDouble(isShooting - 1);
                         } else {
                             character.attack(enemy);
                         }
                     }
                     case 2 -> ((Archer) character).gainEnergy();
                     case 3 -> {
+                        ArrayList potions = character.showPotions();
+                        if(!potions.isEmpty()) {
+                            System.out.println("Choose potion: ");
+                            scanner.nextLine();
+                            int op = scanner.nextInt();
+                            HealthPotion hp = (HealthPotion) potions.get(op);
+                            hp.use(character);
+                            character.inventory.removeItem(hp);
+                        }
+                    }
+                    case 4 -> {
                         if (canUseDoubleArrows) {
                             ((Archer) character).doubleArrows(enemy);
-                            ((Archer) character).shootsDouble -= 1;
+                            ((Archer) character).setShootsDouble(isShooting - 1);
                         } else {
                             System.out.println("Invalid option, defaulting to Attack.");
                             character.attack(enemy);
@@ -122,11 +144,12 @@ public class Round {
                 System.out.println("Choose a skill:");
                 System.out.println("1) Attack");
                 System.out.println("2) Gain Speed");
+                System.out.println("3) Use Healing Potion");
 
                 boolean canSpeedUp = ((Warrior) character).getSpeed() >= 16;
 
                 if(canSpeedUp)
-                    System.out.println("3) Speed Up");
+                    System.out.println("4) Speed Up");
 
                 int opt = scanner.nextInt();
 
@@ -134,6 +157,17 @@ public class Round {
                     case 1 -> character.attack(enemy);
                     case 2 -> ((Warrior) character).gainSpeed();
                     case 3 -> {
+                        ArrayList potions = character.showPotions();
+                        if(!potions.isEmpty()) {
+                            System.out.println("Choose potion: ");
+                            scanner.nextLine();
+                            int op = scanner.nextInt();
+                            HealthPotion hp = (HealthPotion) potions.get(op);
+                            hp.use(character);
+                            character.inventory.removeItem(hp);
+                        }
+                    }
+                    case 4 -> {
                         if (canSpeedUp) {
                             characterRound += 2;
                             ((Warrior) character).useSpeed();
@@ -156,7 +190,12 @@ public class Round {
         }
 
         // enemy round
-        while(enemyRound > 0){
+        while(enemyRound > 0 && enemy.isAlive()){
+
+            if(enemy.isPoisoned > 0){
+                enemy.health -= 2;
+                enemy.isPoisoned -= 1;
+            }
 
             switch (enemy.getClass().getSimpleName()) {
                 case "Goblin" -> {
@@ -181,24 +220,25 @@ public class Round {
             enemyRound -= 1;
             if(!character.isAlive())
                 endRound(character, enemy);
+
         }
     }
 
     private void endRound(Character character, Enemy enemy){
         if(!character.isAlive()){
-            character = null;
             System.out.println("The character " + character.name + " has been defeated!");
+            // character = null;
         }
         else if(!enemy.isAlive()) {
             ArrayList drops = enemy.drops();
             if(!drops.isEmpty()){
+                System.out.print(character.name + " has gained " + character.gold + " gold! ");
                 character.addGold((int) drops.get(0));
-                System.out.println(character.name + " has gained " + character.gold + " gold!");
+                System.out.print(character.name + " has gained " + character.exp + " exp! ");
                 character.addExp((int) drops.get(1));
-                System.out.println(character.name + " has gained " + character.exp + " exp!");
 
-                drops.remove(0);
-                drops.remove(1);
+                drops.removeFirst();
+                drops.removeFirst();
 
                 if(!drops.isEmpty()) {
                     for (var item : drops) {
