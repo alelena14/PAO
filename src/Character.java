@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Character {
@@ -8,10 +9,10 @@ public class Character {
     protected String attackType;
     protected Weapon weapon;
     protected int isBurned = 0;
-    public Inventory inventory = new Inventory();
-    int level = 1;
-    int exp;
-    int gold = 0;
+    protected Inventory inventory = new Inventory();
+    protected int level = 1;
+    protected int exp;
+    protected int gold = 0;
 
     public Character(){}
 
@@ -79,6 +80,7 @@ public class Character {
 
     public void attack(Enemy enemy){
         enemy.health = enemy.defense >= attack ? enemy.health : enemy.health - attack + enemy.defense;
+        enemy.health = Math.max(enemy.health, 0);
         if (this instanceof Mage) {
             System.out.println("Mage used Attack!");
         } else if (this instanceof Warrior) {
@@ -101,22 +103,42 @@ public class Character {
     /////////////////// Inventory //////////////////////
 
     public void addItemToInventory(Item item) {
-        inventory.items.add(item);
+        inventory.addItem(item);
         System.out.println(item.name + " added to inventory.");
     }
 
     public void showInventory() {
         System.out.println("Inventory:");
-        if (inventory.items.isEmpty()) {
+        ArrayList items = inventory.getItems();
+        if (items.isEmpty()) {
             System.out.println(" - empty -");
         }
-        for (int i = 0; i < inventory.items.size(); i++) {
-            if(inventory.items.get(i) instanceof HealthPotion){
-                HealthPotion hp = (HealthPotion) inventory.items.get(i);
-                System.out.println(i + ": " + hp.name + ", heal amount: " + hp.getHealAmount());
+        for (int i = 0; i < items.size(); i++) {
+            Item currentItem = (Item) items.get(i);
+            if(currentItem instanceof HealthPotion hp){
+                System.out.println(i + ": " + hp.name + ", heal amount: " + hp.getHealAmount() + ", value: " + hp.getValue());
             }else
-                System.out.println(i + ": " + inventory.items.get(i).name);
+                System.out.println(i + ": " + currentItem.getName() + ", value: " + currentItem.getValue());
         }
     }
+
+    public ArrayList showPotions() {
+        ArrayList items = inventory.getItems();
+        ArrayList potions = new ArrayList();
+        if (items.isEmpty()) {
+            return potions;
+        }
+        for (int i = 0; i < items.size(); i++) {
+            Item currentItem = (Item) items.get(i);
+            if(currentItem instanceof HealthPotion hp){
+                potions.add(hp);
+                System.out.println(i + ": " + hp.name + ", heal amount: " + hp.getHealAmount() + ", value: " + hp.getValue());
+            }
+        }
+
+        return potions;
+
+    }
+
 
 }

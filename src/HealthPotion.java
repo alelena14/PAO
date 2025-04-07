@@ -10,8 +10,8 @@ public class HealthPotion extends Item {
 
     @Override
     public void use(Character character) {
-        character.heal(this.healAmount);
         System.out.println("Healed for " + healAmount + " HP.");
+        character.heal(this.healAmount);
     }
 
     public int getHealAmount() {

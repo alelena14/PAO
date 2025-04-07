@@ -40,16 +40,19 @@ public class Main {
 
         character.getInfo();
         character.addItemToInventory(hp);
+        character.addItemToInventory(hp);
         character.addItemToInventory(item);
-
-        character.showInventory();
 
         book.use(character);
 
         character.getInfo();
 
+        Enemy enemy = new Dragon();
 
-
-
+        Round round = new Round(character, enemy);
+        round.newRound();
+        character.getInfo();
+        enemy.getInfo();
+        character.showInventory();
     }
 }

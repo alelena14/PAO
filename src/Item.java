@@ -1,8 +1,8 @@
 
 
 public class Item {
-    public String name;
-    public int value;
+    protected String name;
+    protected int value;
 
     public Item(){}
 
@@ -11,8 +11,15 @@ public class Item {
         this.value = value;
     }
 
-
     public void use(Character character){}
+
+    public String getName() {
+        return name;
+    }
+
+    public int getValue() {
+        return value;
+    }
 
 
 }

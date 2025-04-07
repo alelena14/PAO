@@ -1,5 +1,4 @@
 public class Warrior extends Character{
-
     private int speed;
 
     public Warrior(String name){
@@ -37,7 +36,7 @@ public class Warrior extends Character{
     }
 
     public void enhanceSword(){
-        for (Item item : inventory.items) {
+        for (Item item : inventory.getItems()) {
             if (item.name.equals("Dragon Scale")) {
                 weapon.damage += 12;
                 inventory.removeItem(item);
