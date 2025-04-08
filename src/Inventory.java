@@ -7,6 +7,10 @@ public class Inventory {
         items = new ArrayList<>();
     }
 
+    public Inventory(ArrayList<Item> items) {
+        this.items = items;
+    }
+
     public void removeItem(Item item) {
         if (items.contains(item)) {
             items.remove(item);

@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Character {
@@ -6,15 +8,28 @@ public class Character {
     protected int health;
     protected int attack;
     protected int defense;
-    protected String attackType;
     protected Weapon weapon;
     protected int isBurned = 0;
     protected Inventory inventory = new Inventory();
     protected int level = 1;
-    protected int exp;
+    protected int exp = 0;
     protected int gold = 0;
+    // private Map<Battle.Difficulty, Integer> battlesWon = new EnumMap<>(Battle.Difficulty.class);
 
     public Character(){}
+
+    public void setStats(Character other) {
+        this.name = other.name;
+        this.health = other.health;
+        this.attack = other.attack;
+        this.defense = other.defense;
+        this.weapon = other.weapon;
+        this.isBurned = other.isBurned;
+        this.inventory = new Inventory(other.inventory.getItems());
+        this.level = other.level;
+        this.exp = other.exp;
+        this.gold = other.gold;
+    }
 
     public Character chooseCharacter() {
         Scanner scanner = new Scanner(System.in);

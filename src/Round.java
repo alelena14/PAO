@@ -6,18 +6,19 @@ public class Round {
     private final Character character;
     private final Enemy enemy;
 
-    public Round(Character player, Enemy enemy) {
-        this.character = player;
+    public Round(Character character, Enemy enemy) {
+        this.character = character;
         this.enemy = enemy;
     }
 
-    public void newRound(){
+    public int newRound(){
         int characterRound = 1;
         int enemyRound = 1;
         Scanner scanner = new Scanner(System.in);
 
         // character round
         while(characterRound > 0 && character.isAlive()){
+            character.getInfo();
 
             if(character.isBurned > 0){
                 character.isBurned -= 1;
@@ -28,6 +29,7 @@ public class Round {
             if(character instanceof Mage){
 
                 System.out.println("Choose a skill:");
+                System.out.println("0) Quit battle");
                 System.out.println("1) Attack");
                 System.out.println("2) Gain Mana");
                 System.out.println("3) Use Healing Potion");
@@ -45,6 +47,10 @@ public class Round {
                 int opt = scanner.nextInt();
 
                 switch (opt) {
+                    case 0 -> {
+                        System.out.println("You chose to quit the battle.");
+                        return 0;
+                    }
                     case 1 -> character.attack(enemy);
                     case 2 -> ((Mage) character).gainMana();
                     case 3 -> {
@@ -90,6 +96,7 @@ public class Round {
                 }
 
                 System.out.println("Choose a skill:");
+                System.out.println("0) Quit battle");
                 System.out.println("1) Attack");
                 System.out.println("2) Gain Energy");
                 System.out.println("3) Use Healing Potion");
@@ -102,6 +109,10 @@ public class Round {
                 int opt = scanner.nextInt();
 
                 switch (opt) {
+                    case 0 -> {
+                        System.out.println("You chose to quit the battle.");
+                        return 0;
+                    }
                     case 1 -> {
                         if (isShooting > 0) {
                             character.attack(enemy);
@@ -142,6 +153,7 @@ public class Round {
             }else {
 
                 System.out.println("Choose a skill:");
+                System.out.println("0) Quit battle");
                 System.out.println("1) Attack");
                 System.out.println("2) Gain Speed");
                 System.out.println("3) Use Healing Potion");
@@ -154,6 +166,10 @@ public class Round {
                 int opt = scanner.nextInt();
 
                 switch (opt) {
+                    case 0 -> {
+                        System.out.println("You chose to quit the battle.");
+                        return 0;
+                    }
                     case 1 -> character.attack(enemy);
                     case 2 -> ((Warrior) character).gainSpeed();
                     case 3 -> {
@@ -191,6 +207,7 @@ public class Round {
 
         // enemy round
         while(enemyRound > 0 && enemy.isAlive()){
+            enemy.getInfo();
 
             if(enemy.isPoisoned > 0){
                 enemy.health -= 2;
@@ -198,9 +215,7 @@ public class Round {
             }
 
             switch (enemy.getClass().getSimpleName()) {
-                case "Goblin" -> {
-                    enemy.attack(character);
-                }
+                case "Goblin" -> enemy.attack(character);
                 case "Orc" -> {
                     if (((Orc) enemy).getEnergy() >= 11)
                         ((Orc) enemy).throwAxe(character);
@@ -222,6 +237,7 @@ public class Round {
                 endRound(character, enemy);
 
         }
+        return 1;
     }
 
     private void endRound(Character character, Enemy enemy){
@@ -232,9 +248,9 @@ public class Round {
         else if(!enemy.isAlive()) {
             ArrayList drops = enemy.drops();
             if(!drops.isEmpty()){
-                System.out.print(character.name + " has gained " + character.gold + " gold! ");
+                System.out.print(character.name + " has gained " + drops.get(0) + " gold! ");
                 character.addGold((int) drops.get(0));
-                System.out.print(character.name + " has gained " + character.exp + " exp! ");
+                System.out.print(character.name + " has gained " + drops.get(1) + " exp! ");
                 character.addExp((int) drops.get(1));
 
                 drops.removeFirst();
@@ -243,7 +259,6 @@ public class Round {
                 if(!drops.isEmpty()) {
                     for (var item : drops) {
                         character.addItemToInventory((Item) item);
-                        System.out.println(character.name + " has obtained: " + ((Item) item).name + "!");
                     }
                 }
             }
