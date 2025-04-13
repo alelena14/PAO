@@ -7,18 +7,17 @@ public class Archer extends Character{
         this.energy = 30;
         this.health = 25;
         this.attack = 8;
-        this.defense = 7;
+        this.defense = 6;
         this.weapon = null;
     }
 
-    @Override
-    public void getInfo(){
-        super.getInfo();
-        System.out.println(", energy " + this.energy);
-    }
 
     public int getEnergy() {
         return energy;
+    }
+
+    public void addEnergy(int energy){
+        this.energy += energy;
     }
 
     public int getShootsDouble() {
@@ -39,16 +38,21 @@ public class Archer extends Character{
 
     public void gainEnergy(){
         this.energy += 20;
-        System.out.println("Archer gained 20 Energy!");
+        System.out.println("Archer has gained 20 Energy!");
     }
 
     public void enhanceBow(){
+        boolean found = false;
         for (Item item : inventory.getItems()) {
             if (item.name.equals("Rare Gem")) {
-                weapon.damage += 20;
+                found = true;
+                System.out.println("Bow enhanced with Rare Gem!");
+                weapon.setDamage(weapon.getDamage() + 20);
                 inventory.removeItem(item);
                 break;
             }
         }
+        if(!found)
+            System.out.println("You do not have a Rare Gem!");
     }
 }

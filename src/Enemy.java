@@ -29,7 +29,11 @@ public abstract class Enemy {
     public ArrayList drops(){return null;}
 
     public void getInfo(){
-        System.out.println(this.name + ": attack " + this.attack + ", health " + this.health);
+        System.out.println("\n👹 ENEMY:");
+        System.out.println("📛 " + this.getClass().getSimpleName());
+        System.out.println("❤️ HP: " + this.health);
+        System.out.println("🗡️ Attack: " + this.attack);
+
     }
 
 }

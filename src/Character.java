@@ -14,7 +14,7 @@ public class Character {
     protected int level = 1;
     protected int exp = 0;
     protected int gold = 0;
-    // private Map<Battle.Difficulty, Integer> battlesWon = new EnumMap<>(Battle.Difficulty.class);
+    private final Map<Battle.Difficulty, Integer> battlesWon = new EnumMap<>(Battle.Difficulty.class);
 
     public Character(){}
 
@@ -35,9 +35,9 @@ public class Character {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Choose your Character:");
-        System.out.println("1) Mage");
-        System.out.println("2) Archer");
-        System.out.println("3) Warrior");
+        System.out.println("1)🧙 Mage");
+        System.out.println("2)🏹 Archer");
+        System.out.println("3)⚔️ Warrior");
 
         int opt = scanner.nextInt();
 
@@ -58,7 +58,6 @@ public class Character {
 
     public void addGold(int gold){
         this.gold += gold;
-        System.out.println("Balance: " + gold);
     }
 
     public void addExp(int exp){
@@ -66,10 +65,18 @@ public class Character {
 
         if(exp >= 100){
             level += 1;
-            exp = exp % 100;
+            this.exp = exp % 100;
+            this.health += 10;
+            this.attack += 10;
+            switch (this) {
+                case Mage _ -> ((Mage) this).addMana(10);
+                case Warrior _ -> ((Warrior) this).addSpeed(10);
+                case Archer _ -> ((Archer) this).addEnergy(10);
+                default -> {
+                }
+            }
             System.out.println(name + " has now level " + level + "!");
         }
-        System.out.println("Exp: " + exp);
     }
 
     public void heal(int healAmount){
@@ -87,21 +94,21 @@ public class Character {
             System.out.println("You don't have enough gold!");
         }else {
             this.gold -= 50;
-            weapon.level += 1;
-            weapon.damage += 8;
-            System.out.println(weapon.name + " is now level " + weapon.level + "!");
+            weapon.setLevel(weapon.getLevel() + 1);
+            weapon.setDamage(weapon.getDamage() + 8);
+            System.out.println(weapon.name + " is now level " + weapon.getLevel() + "!");
         }
     }
 
     public void attack(Enemy enemy){
         enemy.health = enemy.defense >= attack ? enemy.health : enemy.health - attack + enemy.defense;
         enemy.health = Math.max(enemy.health, 0);
-        if (this instanceof Mage) {
-            System.out.println("Mage used Attack!");
-        } else if (this instanceof Warrior) {
-            System.out.println("Warrior used Attack!");
-        } else if (this instanceof Archer) {
-            System.out.println("Archer used Attack!");
+        switch (this) {
+            case Mage _ -> System.out.println("Mage used Attack!");
+            case Warrior _ -> System.out.println("Warrior used Attack!");
+            case Archer _ -> System.out.println("Archer used Attack!");
+            default -> {
+            }
         }
     }
 
@@ -110,9 +117,30 @@ public class Character {
     }
 
     public void getInfo(){
-        System.out.print(this.name + ": attack " + this.attack + ", health " + this.health);
+        System.out.println("\n🧙 CHARACTER STATUS:");
+        System.out.println("📛 Name: " + this.name);
+        System.out.println("❤️ HP: " + this.health);
+        System.out.println("🗡️ Attack: " + this.attack);
+        switch (this) {
+            case Mage _ -> System.out.println("💧 Mana: " + ((Mage) this).getMana());
+            case Archer _ -> System.out.println("🏹 Energy: " + ((Archer) this).getEnergy());
+            case Warrior _ -> System.out.println("⚡ Speed: " + ((Warrior) this).getSpeed());
+            default -> {
+            }
+        }
         if(weapon!=null)
-            System.out.print(", weapon: " + this.weapon.name);
+            System.out.println("🗡️ Weapon: " + this.weapon.name);
+
+    }
+
+    public void printBattlesWon() {
+        for (Map.Entry<Battle.Difficulty, Integer> entry : battlesWon.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+
+    public void incrementBattlesWon(Battle.Difficulty difficulty) {
+        battlesWon.merge(difficulty, 1, Integer::sum);
     }
 
     /////////////////// Inventory //////////////////////
@@ -122,18 +150,30 @@ public class Character {
         System.out.println(item.name + " added to inventory.");
     }
 
+    public void sellItem(Item item){
+        inventory.removeItem(item);
+        this.gold += item.value;
+        System.out.println(item.name + " has been sold! +" + item.value + " gold");
+    }
+
     public void showInventory() {
-        System.out.println("Inventory:");
-        ArrayList items = inventory.getItems();
+        ArrayList<Item> items = inventory.getItems();
+
+        System.out.println("\n🧳 Inventory:");
         if (items.isEmpty()) {
             System.out.println(" - empty -");
+            return;
         }
+
         for (int i = 0; i < items.size(); i++) {
-            Item currentItem = (Item) items.get(i);
-            if(currentItem instanceof HealthPotion hp){
-                System.out.println(i + ": " + hp.name + ", heal amount: " + hp.getHealAmount() + ", value: " + hp.getValue());
-            }else
-                System.out.println(i + ": " + currentItem.getName() + ", value: " + currentItem.getValue());
+            Item currentItem = items.get(i);
+            if (currentItem instanceof HealthPotion hp) {
+                System.out.println(i + ": 🧪 " + hp.name + " | Heals: " + hp.getHealAmount() + " ❤️ | 💰 " + hp.getValue() + " gold");
+            } else if (currentItem instanceof Weapon wp) {
+                System.out.println(i + ": 🗡️ " + wp.name + " | Level: " + wp.getLevel() + " | 💰 " + wp.getValue() + " gold");
+            } else {
+                System.out.println(i + ": 📦 " + currentItem.getName() + " | 💰 " + currentItem.getValue() + " gold");
+            }
         }
     }
 
@@ -150,10 +190,9 @@ public class Character {
                 System.out.println(i + ": " + hp.name + ", heal amount: " + hp.getHealAmount() + ", value: " + hp.getValue());
             }
         }
-
         return potions;
-
     }
+
 
 
 }

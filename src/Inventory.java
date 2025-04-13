@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Inventory {
     private final ArrayList<Item> items;
@@ -9,6 +10,7 @@ public class Inventory {
 
     public Inventory(ArrayList<Item> items) {
         this.items = items;
+        this.items.sort(Comparator.comparing(Item::getValue));
     }
 
     public void removeItem(Item item) {
@@ -24,9 +26,9 @@ public class Inventory {
         return items;
     }
 
-    public void addItem(Item item){
+    public void addItem(Item item) {
         items.add(item);
+        items.sort(Comparator.comparingInt(i -> i.value));
     }
-
 
 }

@@ -1,8 +1,8 @@
 
 public class Weapon extends Item {
-    public int damage;
-    private String type;
-    public int level = 1;
+    private int damage;
+    private final String type;
+    private int level = 1;
 
     public Weapon(String name, int damage, String type, int value) {
         this.name = name;
@@ -13,21 +13,36 @@ public class Weapon extends Item {
 
     @Override
     public void use(Character character) {
-        if (character instanceof Mage && "Grimoire".equals(this.type)) {
-            character.equipWeapon(this);
-            System.out.println("Mage equipped magic book!");
-        } else if (character instanceof Warrior && "Sword".equals(this.type)) {
-            character.equipWeapon(this);
-            System.out.println("Warrior equipped sword!");
-        } else if (character instanceof Archer && "Bow".equals(this.type)) {
-            character.equipWeapon(this);
-            System.out.println("Archer equipped bow!");
-        } else {
-            System.out.println("Cannot equip this weapon type!");
+        switch (character) {
+            case Mage _ when "Grimoire".equals(this.type) -> {
+                character.equipWeapon(this);
+                System.out.println("Mage equipped magic book!");
+            }
+            case Warrior _ when "Sword".equals(this.type) -> {
+                character.equipWeapon(this);
+                System.out.println("Warrior equipped sword!");
+            }
+            case Archer _ when "Bow".equals(this.type) -> {
+                character.equipWeapon(this);
+                System.out.println("Archer equipped bow!");
+            }
+            case null, default -> System.out.println("Cannot equip this weapon type!");
         }
     }
 
     public int getDamage() {
         return damage;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }
