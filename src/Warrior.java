@@ -6,24 +6,16 @@ public class Warrior extends Character{
         this.speed = 30;
         this.health = 30;
         this.attack = 5;
-        this.defense = 10;
+        this.defense = 7;
         this.weapon = null;
-    }
-
-    @Override
-    public void getInfo(){
-        super.getInfo();
-        System.out.println(", speed " + this.speed);
     }
 
     public int getSpeed() {
         return speed;
     }
 
-    public void throwAxe(Enemy enemy){
-        enemy.health = enemy.defense >= attack + 5 ? enemy.health : enemy.health - attack + 5 + enemy.defense;
-        this.speed -= 11;
-        System.out.println("Warrior threw his axe!");
+    public void addSpeed(int speed){
+        this.speed += speed;
     }
 
     public void useSpeed(){
@@ -32,17 +24,22 @@ public class Warrior extends Character{
 
     public void gainSpeed(){
         this.speed += 20;
-        System.out.println("Warrior gained 20 Speed!");
+        System.out.println("Warrior has gained 20 Speed!");
     }
 
     public void enhanceSword(){
+        boolean found = false;
         for (Item item : inventory.getItems()) {
             if (item.name.equals("Dragon Scale")) {
-                weapon.damage += 12;
+                found = true;
+                System.out.println("Sword enhanced with Dragon Scale!");
+                weapon.setDamage(weapon.getDamage() + 12);
                 inventory.removeItem(item);
                 break;
             }
         }
+        if(!found)
+            System.out.println("You do not have a Dragon Scale!");
     }
 
 }

@@ -11,14 +11,12 @@ public class Mage extends Character {
         this.weapon = null;
     }
 
-    @Override
-    public void getInfo(){
-        super.getInfo();
-        System.out.println(", mana " + this.mana);
-    }
-
     public int getMana() {
         return mana;
+    }
+
+    public void addMana(int mana){
+        this.mana += mana;
     }
 
     public void useFireSpell(Enemy enemy){
@@ -44,16 +42,21 @@ public class Mage extends Character {
 
     public void gainMana(){
         this.mana += 20;
-        System.out.println("Mage gained 20 Mana!");
+        System.out.println("Mage has gained 20 Mana!");
     }
 
     public void enhanceGrimoire(){
+        boolean found = false;
         for (Item item : inventory.getItems()) {
             if (item.name.equals("Rare Gem")) {
-                weapon.damage += 20;
+                found = true;
+                System.out.println("Book enhanced with Rare Gem!");
+                weapon.setDamage(weapon.getDamage() + 20);
                 inventory.removeItem(item);
                 break;
             }
         }
+        if(!found)
+            System.out.println("You do not have a Rare Gem!");
     }
 }

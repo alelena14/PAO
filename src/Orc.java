@@ -11,7 +11,7 @@ public class Orc extends Enemy {
         character.health = character.defense >= 2 * attack ? character.health : character.health - 2 * attack + character.defense;
         character.health = Math.max(character.health, 0);
         this.energy -= 11;
-        System.out.println("The orc threw his axe!");
+        System.out.println("💥 The orc threw his axe!");
     }
 
     @Override

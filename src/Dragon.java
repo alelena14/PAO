@@ -12,7 +12,7 @@ public class Dragon extends Enemy {
         character.health = Math.max(character.health, 0);
         this.energy -= 18;
         character.isBurned += 1;
-        System.out.println("Dragon breathes fire!");
+        System.out.println("🔥 Dragon breathes fire!");
     }
 
     @Override
