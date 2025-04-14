@@ -52,6 +52,15 @@ public class Battle {
 
     public void quitBattle() {
         character.setStats(savedState);
+        switch (character) {
+            case Mage m ->
+                    m.setMana(30 + (character.level - savedState.level) * 10);
+            case Archer a ->
+                    a.setEnergy(30 + (character.level - savedState.level) * 10);
+            case Warrior w ->
+                    w.setSpeed(30 + (character.level - savedState.level) * 10);
+            default -> throw new IllegalStateException("Unexpected value: " + character.getClass().getSimpleName());
+        }
         System.out.println("⚠️ You chose to quit the battle...");
         System.out.println("🔄 Your character's stats have been restored.");
     }
@@ -60,6 +69,17 @@ public class Battle {
         System.out.println("\n✅ Battle complete! Victory recorded for difficulty: " + difficulty);
         character.incrementBattlesWon(difficulty);
         character.health = savedState.health + (character.level - savedState.level) * 10; // reset health
+        character.attack = savedState.attack + (character.level - savedState.level) * 10;
+        switch (character) {
+            case Mage m ->
+                    m.setMana(30 + (character.level - savedState.level) * 10);
+            case Archer a ->
+                    a.setEnergy(30 + (character.level - savedState.level) * 10);
+            case Warrior w ->
+                    w.setSpeed(30 + (character.level - savedState.level) * 10);
+            default -> throw new IllegalStateException("Unexpected value: " + character.getClass().getSimpleName());
+        }
+
     }
 
     private int superEasyBattle(Character character){ // 1-3 goblins
@@ -67,6 +87,7 @@ public class Battle {
         int goblins = (int)(Math.random() * 3) + 1;
         for(int i = 0; i < goblins && !quit; i++){
             Goblin goblin = new Goblin();
+            System.out.println("\n💥 A Goblin has spawned from the shadows! 🗡️");
             Round r = new Round(character, goblin);
             while (goblin.isAlive() && character.isAlive()) {
                 int roundStatus = r.newRound();
@@ -79,7 +100,7 @@ public class Battle {
                 }
             }
         }
-        if(character.isAlive())
+        if(character.isAlive() && !quit)
             winBattle(Difficulty.SUPER_EASY);
         return 0;
     }
@@ -89,6 +110,7 @@ public class Battle {
         int goblins = (int)(Math.random() * 4) + 4;
         for(int i = 0; i < goblins && !quit; i++){
             Goblin goblin = new Goblin();
+            System.out.println("\n💥 A Goblin has spawned from the shadows! 🗡️");
             Round r = new Round(character, goblin);
             while (goblin.isAlive() && character.isAlive()) {
                 int roundStatus = r.newRound();
@@ -101,7 +123,7 @@ public class Battle {
                 }
             }
         }
-        if(character.isAlive())
+        if(character.isAlive() && !quit)
             winBattle(Difficulty.EASY);
         return 0;
     }
@@ -111,6 +133,7 @@ public class Battle {
         if(Math.random() <= 0.5){
             for (int i = 0; i < 2; i++) {
                 Orc orc = new Orc();
+                System.out.println("\n⚔️ A wild Orc roars and charges into battle! 🧟");
                 Round r = new Round(character,orc);
                 while (orc.isAlive() && character.isAlive()) {
                     int roundStatus = r.newRound();
@@ -127,6 +150,7 @@ public class Battle {
             int goblins = (int) (Math.random() * 2) + 1;
             for (int i = 0; i < goblins; i++) {
                 Goblin goblin = new Goblin();
+                System.out.println("\n💥 A Goblin has spawned from the shadows! 🗡️");
                 Round r = new Round(character, goblin);
                 while (goblin.isAlive() && character.isAlive()) {
                     int roundStatus = r.newRound();
@@ -141,6 +165,7 @@ public class Battle {
             }
             if(character.isAlive() && !quit){
                 Orc orc = new Orc();
+                System.out.println("\n⚔️ A wild Orc roars and charges into battle! 🧟");
                 Round r = new Round(character,orc);
                 while (orc.isAlive() && character.isAlive()) {
                     int roundStatus = r.newRound();
@@ -154,7 +179,7 @@ public class Battle {
                 }
             }
         }
-        if(character.isAlive())
+        if(character.isAlive() && !quit)
             winBattle(Difficulty.NORMAL);
         return 0;
     }
@@ -164,6 +189,7 @@ public class Battle {
         int orcs = (int)(Math.random() * 4) + 2;
         for(int i = 0; i < orcs && !quit; i++){
             Orc orc = new Orc();
+            System.out.println("\n⚔️ A wild Orc roars and charges into battle! 🧟");
             Round r = new Round(character, orc);
             while (orc.isAlive() && character.isAlive()) {
                 int roundStatus = r.newRound();
@@ -176,7 +202,7 @@ public class Battle {
                 }
             }
         }
-        if(character.isAlive())
+        if(character.isAlive() && !quit)
             winBattle(Difficulty.HARD);
         return 0;
     }
@@ -185,6 +211,7 @@ public class Battle {
         boolean quit = false;
         for(int i = 0; i < 3 && !quit; i++){
             Orc orc = new Orc();
+            System.out.println("\n⚔️ A wild Orc roars and charges into battle! 🧟");
             Round r = new Round(character, orc);
             while (orc.isAlive() && character.isAlive()) {
                 int roundStatus = r.newRound();
@@ -199,6 +226,7 @@ public class Battle {
         }
         if(character.isAlive() && !quit){
             Dragon dragon = new Dragon();
+            System.out.println("\n🔥 A mighty Dragon descends from the skies! 🐉");
             Round r = new Round(character, dragon);
             while (dragon.isAlive() && character.isAlive()) {
                 int roundStatus = r.newRound();
@@ -211,7 +239,7 @@ public class Battle {
                 }
             }
         }
-        if(character.isAlive())
+        if(character.isAlive() && !quit)
             winBattle(Difficulty.VERY_HARD);
         return 0;
     }
@@ -221,6 +249,7 @@ public class Battle {
         int dragons = (int)(Math.random() * 2) + 2;
         for(int i = 0; i < dragons && !quit; i++){
             Dragon dragon = new Dragon();
+            System.out.println("\n🔥 A mighty Dragon descends from the skies! 🐉");
             Round r = new Round(character, dragon);
             while (dragon.isAlive() && character.isAlive()) {
                 int roundStatus = r.newRound();
@@ -233,7 +262,7 @@ public class Battle {
                 }
             }
         }
-        if(character.isAlive())
+        if(character.isAlive() && !quit)
             winBattle(Difficulty.NIGHTMARE);
         return 0;
     }

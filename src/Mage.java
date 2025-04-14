@@ -11,6 +11,10 @@ public class Mage extends Character {
         this.weapon = null;
     }
 
+    public void setMana(int mana) {
+        this.mana = mana;
+    }
+
     public int getMana() {
         return mana;
     }

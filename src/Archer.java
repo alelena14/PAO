@@ -1,6 +1,6 @@
 public class Archer extends Character{
     private int energy;
-    private int shootsDouble = 0;
+    private int shootsDouble = -10;
 
     public Archer(String name){
         this.name = name;
@@ -11,6 +11,9 @@ public class Archer extends Character{
         this.weapon = null;
     }
 
+    public void setEnergy(int energy) {
+        this.energy = energy;
+    }
 
     public int getEnergy() {
         return energy;
@@ -31,7 +34,7 @@ public class Archer extends Character{
     public void doubleArrows(Enemy enemy){
         this.energy -= 16;
         this.attack *= 2;
-        shootsDouble = 2;
+        this.shootsDouble = 1;
         enemy.health = enemy.defense >= attack ? enemy.health : enemy.health - attack + enemy.defense;
         System.out.println("Archer is shooting Double Arrows!");
     }

@@ -30,4 +30,8 @@ public class Orc extends Enemy {
         return energy;
     }
 
+    public void setEnergy(int energy) {
+        this.energy = energy;
+    }
+
 }

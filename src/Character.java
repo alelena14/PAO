@@ -63,9 +63,9 @@ public class Character {
     public void addExp(int exp){
         this.exp += exp;
 
-        if(exp >= 100){
+        if(this.exp >= 100){
             level += 1;
-            this.exp = exp % 100;
+            this.exp = this.exp % 100;
             this.health += 10;
             this.attack += 10;
             switch (this) {
@@ -90,10 +90,10 @@ public class Character {
     }
 
     public void upgradeWeapon(){
-        if(this.gold < 50){
+        if(this.gold < 25){
             System.out.println("You don't have enough gold!");
         }else {
-            this.gold -= 50;
+            this.gold -= 25;
             weapon.setLevel(weapon.getLevel() + 1);
             weapon.setDamage(weapon.getDamage() + 8);
             System.out.println(weapon.name + " is now level " + weapon.getLevel() + "!");
@@ -170,7 +170,7 @@ public class Character {
             if (currentItem instanceof HealthPotion hp) {
                 System.out.println(i + ": 🧪 " + hp.name + " | Heals: " + hp.getHealAmount() + " ❤️ | 💰 " + hp.getValue() + " gold");
             } else if (currentItem instanceof Weapon wp) {
-                System.out.println(i + ": 🗡️ " + wp.name + " | Level: " + wp.getLevel() + " | 💰 " + wp.getValue() + " gold");
+                System.out.println(i + ": 🗡️ " + wp.name + " | Level: " + wp.getLevel() + " | Damage: " + wp.getDamage() + " | 💰 " + wp.getValue() + " gold");
             } else {
                 System.out.println(i + ": 📦 " + currentItem.getName() + " | 💰 " + currentItem.getValue() + " gold");
             }

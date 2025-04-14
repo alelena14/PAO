@@ -10,7 +10,7 @@ public class Goblin extends Enemy {
         ArrayList<Object> drops = new ArrayList<>();
         drops.add(10); // gold
         drops.add(15); // exp
-        drops.add(new Weapon("rusty dagger", 5, "Sword", 2));
+        drops.add(new Weapon("rusty dagger", 3, "Sword", 2));
         if(Math.random() < 0.01)
             drops.add(new Item("Rare Gem",400));
 
