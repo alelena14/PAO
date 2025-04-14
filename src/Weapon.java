@@ -12,21 +12,42 @@ public class Weapon extends Item {
     }
 
     @Override
-    public void use(Character character) {
+    public int use(Character character) {
         switch (character) {
             case Mage _ when "Grimoire".equals(this.type) -> {
+                if(character.weapon != null){
+                    character.inventory.addItem(character.weapon);
+                    System.out.println("🔁 You already have a weapon equipped: " + character.weapon.name);
+                    System.out.println("It will be returned to your inventory.");
+                    character.attack -= character.weapon.getDamage();
+                }
                 character.equipWeapon(this);
-                System.out.println("Mage equipped magic book!");
+                return 0;
             }
             case Warrior _ when "Sword".equals(this.type) -> {
+                if(character.weapon != null){
+                    character.inventory.addItem(character.weapon);
+                    System.out.println("🔁 You already have a weapon equipped: " + character.weapon.name);
+                    System.out.println("It will be returned to your inventory.");
+                    character.attack -= character.weapon.getDamage();
+                }
                 character.equipWeapon(this);
-                System.out.println("Warrior equipped sword!");
+                return 0;
             }
             case Archer _ when "Bow".equals(this.type) -> {
+                if(character.weapon != null){
+                    character.inventory.addItem(character.weapon);
+                    System.out.println("🔁 You already have a weapon equipped: " + character.weapon.name);
+                    System.out.println("It will be returned to your inventory.");
+                    character.attack -= character.weapon.getDamage();
+                }
                 character.equipWeapon(this);
-                System.out.println("Archer equipped bow!");
+                return 0;
             }
-            case null, default -> System.out.println("Cannot equip this weapon type!");
+            default -> {
+                System.out.println("❌ Cannot equip this weapon type!");
+                return -1;
+            }
         }
     }
 

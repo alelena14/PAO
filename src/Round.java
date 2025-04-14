@@ -18,6 +18,19 @@ public class Round {
 
         // character round
         while(characterRound > 0 && character.isAlive()){
+            if(character instanceof Archer archer){
+                int isShooting = archer.getShootsDouble();
+
+                if (isShooting >= 0) {
+                    ((Archer) character).setShootsDouble(isShooting - 1);
+                    isShooting -= 1;
+                }
+
+                if (isShooting == -1) {
+                    character.attack /= 2;
+                    archer.setShootsDouble(-10);
+                }
+            }
             character.getInfo();
 
             if (character.isBurned > 0) {
@@ -89,10 +102,6 @@ public class Round {
                 }
                 // Archer
                 case Archer archer -> {
-                    int isShooting = archer.getShootsDouble();
-                    if (isShooting == -1) {
-                        character.attack /= 2;
-                    }
 
                     boolean canUseDoubleArrows = archer.getEnergy() >= 16;
                     ArrayList potions = character.showPotions();
@@ -112,9 +121,6 @@ public class Round {
                         }
                         case 1 -> {
                             character.attack(enemy);
-                            if (isShooting > 0) {
-                                ((Archer) character).setShootsDouble(isShooting - 1);
-                            }
                         }
                         case 2 -> ((Archer) character).gainEnergy();
                         case 3 -> {
@@ -133,7 +139,6 @@ public class Round {
                         case 4 -> {
                             if (canUseDoubleArrows) {
                                 ((Archer) character).doubleArrows(enemy);
-                                ((Archer) character).setShootsDouble(((Archer) character).getShootsDouble() - 1);
                             } else {
                                 System.out.println("Invalid option, defaulting to Attack.");
                                 character.attack(enemy);
@@ -144,8 +149,6 @@ public class Round {
                             character.attack(enemy);
                         }
                     }
-
-
                 }
                 // Warrior
                 case Warrior warrior -> {
@@ -211,8 +214,8 @@ public class Round {
 
             if (enemy.isPoisoned > 0) {
                 enemy.isPoisoned -= 1;
-                enemy.health -= 2;
-                System.out.println("☠️ Enemy is poisoned! -2 HP.");
+                enemy.health -= 3;
+                System.out.println("☠️ Enemy is poisoned! -3 HP.");
             }
 
 
@@ -223,12 +226,14 @@ public class Round {
                         ((Orc) enemy).throwAxe(character);
                     else
                         enemy.attack(character);
+                    ((Orc) enemy).setEnergy(((Orc) enemy).getEnergy() + 3); // gets 3 energy at the end of the round
                 }
                 case "Dragon" -> {
                     if (((Dragon) enemy).getEnergy() >= 18)
                         ((Dragon) enemy).breatheFire(character);
                     else
                         enemy.attack(character);
+                    ((Dragon) enemy).setEnergy(((Dragon) enemy).getEnergy() + 3);
                 }
                 default -> System.out.println("Unknown enemy type.");
 

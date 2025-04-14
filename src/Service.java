@@ -29,7 +29,6 @@ public class Service {
             getInfo(character);
             System.out.println();
         }
-
     }
 
     void chooseCurrentCharacter() {
@@ -65,7 +64,7 @@ public class Service {
             }
         }
 
-        currentCharacter.setStats(characters.get(choice));
+        currentCharacter = characters.get(choice);
         System.out.println("✅ You selected: " + currentCharacter.name + " the " + currentCharacter.getClass().getSimpleName() + "!");
     }
 
@@ -83,12 +82,28 @@ public class Service {
             int opt = scanner.nextInt();
 
             switch (opt) {
-                case 1 -> currentCharacter.upgradeWeapon();
+                case 1 -> {
+                    currentCharacter.attack -= currentCharacter.weapon.getDamage();
+                    currentCharacter.upgradeWeapon();
+                    currentCharacter.attack += currentCharacter.weapon.getDamage();
+                }
                 case 2 ->{
                     switch (currentCharacter){
-                        case Mage _ -> ((Mage) currentCharacter).enhanceGrimoire();
-                        case Archer _ -> ((Archer) currentCharacter).enhanceBow();
-                        default -> ((Warrior) currentCharacter).enhanceSword();
+                        case Mage _ -> {
+                            currentCharacter.attack -= currentCharacter.weapon.getDamage();
+                            ((Mage) currentCharacter).enhanceGrimoire();
+                            currentCharacter.attack += currentCharacter.weapon.getDamage();
+                        }
+                        case Archer _ -> {
+                            currentCharacter.attack -= currentCharacter.weapon.getDamage();
+                            ((Archer) currentCharacter).enhanceBow();
+                            currentCharacter.attack += currentCharacter.weapon.getDamage();
+                        }
+                        default -> {
+                            currentCharacter.attack -= currentCharacter.weapon.getDamage();
+                            ((Warrior) currentCharacter).enhanceSword();
+                            currentCharacter.attack += currentCharacter.weapon.getDamage();
+                        }
                     }
                 }
             }
@@ -141,15 +156,10 @@ public class Service {
             return;
         }
 
-        if (currentCharacter.weapon != null) {
-            System.out.println("🔁 You already have a weapon equipped: " + currentCharacter.weapon.name);
-            System.out.println("It will be returned to your inventory.");
-            currentCharacter.inventory.addItem(currentCharacter.weapon);
+        if(selectedWeapon.use(currentCharacter) == 0) {
+            currentCharacter.inventory.removeItem(selectedWeapon);
+            System.out.println("✅ Equipped " + selectedWeapon.name + " successfully!");
         }
-
-        selectedWeapon.use(currentCharacter);
-        currentCharacter.inventory.removeItem(selectedWeapon);
-        System.out.println("✅ Equipped " + selectedWeapon.name + " successfully!");
     }
 
     void buyHealingPotion() {
@@ -204,6 +214,94 @@ public class Service {
         System.out.println("✅ You bought a " + potion.getName() + "! It's been added to your inventory.");
     }
 
+    void buyWeapon(){
+        if (characters.isEmpty()) {
+            System.out.println("❌ No characters available!");
+            return;
+        }
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("\n🏹 Available Bows:");
+        System.out.println("1) Wooden Bow 🪵 - Damage: 5⚔️, Cost: 15💰, Value: 10");
+        System.out.println("2) Elven Bow 🍃 - Damage: 12⚔️, Cost: 40💰, Value 30");
+        System.out.println("3) Dragonbone Bow 🐉 - Damage: 25⚔️, Cost: 90💰, Value: 75");
+
+        System.out.println("\n🗡️ Available Swords:");
+        System.out.println("4) Rusty Sword 🧷 - Damage: 4⚔️, Cost: 12💰, Value: 8");
+        System.out.println("5) Steel Blade ⚒️ - Damage: 11⚔️, Cost: 35💰, Value: 25");
+        System.out.println("6) Shadowfang 🗡️ - Damage: 24⚔️, Cost: 85💰, Value: 60");
+
+        System.out.println("\n📖 Available Grimoires:");
+        System.out.println("7) Torn Grimoire 📜 - Spell Power: 6✨, Cost: 16💰, Value: 10");
+        System.out.println("8) Arcane Codex 📘 - Spell Power: 14✨, Cost: 48💰, Value: 40");
+        System.out.println("9) Necronomicon ☠️ - Spell Power: 30✨, Cost: 100💰, Value: 85");
+        System.out.println("0) Cancel");
+
+
+        System.out.print("Choose a weapon to buy (enter the number): ");
+        int choice = scanner.nextInt();
+
+        int cost = 0;
+        Weapon weapon = null;
+
+        switch (choice) {
+            case 1 -> {
+                cost = 15;
+                weapon = new Weapon("Wooden Bow", 5, "Bow", 10);
+            }
+            case 2 -> {
+                cost = 40;
+                weapon = new Weapon("Elven Bow", 12, "Bow", 30);
+            }
+            case 3 -> {
+                cost = 90;
+                weapon = new Weapon("Dragonbone Bow", 25, "Bow", 75);
+            }
+            case 4 -> {
+                cost = 12;
+                weapon = new Weapon("Rusty Sword", 4, "Sword", 8);
+            }
+            case 5 -> {
+                cost = 35;
+                weapon = new Weapon("Steel Blade", 11, "Sword", 25);
+            }
+            case 6 -> {
+                cost = 85;
+                weapon = new Weapon("Shadowfang", 24, "Sword", 60);
+            }
+            case 7 -> {
+                cost = 16;
+                weapon = new Weapon("Torn Grimoire", 6, "Grimoire", 10);
+            }
+            case 8 -> {
+                cost = 48;
+                weapon = new Weapon("Arcane Codex", 14, "Grimoire", 40);
+            }
+            case 9 -> {
+                cost = 100;
+                weapon = new Weapon("Necronomicon", 30, "Grimoire", 85);
+            }
+            case 0 -> {
+                System.out.println("❌ Purchase cancelled.");
+                return;
+            }
+            default -> {
+                System.out.println("❌ Invalid option.");
+                return;
+            }
+        }
+
+
+        if (currentCharacter.gold < cost) {
+            System.out.println("💸 Not enough gold!");
+            return;
+        }
+
+        currentCharacter.addGold(-cost);
+        currentCharacter.inventory.addItem(weapon);
+        System.out.println("✅ You bought a " + weapon.getName() + "! It's been added to your inventory.");
+    }
+
 
     void sellItemFromInventory(){
         if (characters.isEmpty()) {
@@ -213,22 +311,24 @@ public class Service {
         Scanner scanner = new Scanner(System.in);
         currentCharacter.showInventory();
 
-        int index = -1;
+        if(!currentCharacter.inventory.getItems().isEmpty()) {
+            int index = -1;
 
-        while (index < 0 || index >= currentCharacter.inventory.getItems().size()) {
-            System.out.print("🔢 Choose the index of the item you want to sell (or -1 to cancel): ");
-            try {
-                index = scanner.nextInt();
-                if (index == -1) {
-                    System.out.println("❌ Sell cancelled.");
-                    return;
+            while (index < 0 || index >= currentCharacter.inventory.getItems().size()) {
+                System.out.print("🔢 Choose the index of the item you want to sell (or -1 to cancel): ");
+                try {
+                    index = scanner.nextInt();
+                    if (index == -1) {
+                        System.out.println("❌ Sell cancelled.");
+                        return;
+                    }
+                } catch (InputMismatchException e) {
+                    scanner.nextLine(); // clear buffer
+                    System.out.println("❗ Please enter a valid number.");
                 }
-            } catch (InputMismatchException e) {
-                scanner.nextLine(); // clear buffer
-                System.out.println("❗ Please enter a valid number.");
             }
+            currentCharacter.sellItem(currentCharacter.inventory.getItems().get(index));
         }
-        currentCharacter.sellItem(currentCharacter.inventory.getItems().get(index));
     }
 
     void newBattle(){
@@ -279,5 +379,47 @@ public class Service {
         new Dragon().getInfo();
         System.out.println();
     }
+
+    public void showCharacterInfo() {
+        System.out.println("📜 === Character Classes ===");
+
+        // Archer
+        System.out.println("\n🏹 Archer:");
+        System.out.println(" - Health: 25 ❤️");
+        System.out.println(" - Attack: 8 ⚔️");
+        System.out.println(" - Defense: 6 🛡️");
+        System.out.println(" - Energy: 30 ⚡");
+
+        System.out.println("🔸 Abilities:");
+        System.out.println("   • Double Arrows: consumes 16 energy, doubles attack (damage = " + (8 * 2) + " before defense)");
+        System.out.println("   • Gain Energy: restores 20 energy");
+        System.out.println("   • Enhance Bow: +20 damage if you have a 'Rare Gem'");
+
+        // Mage
+        System.out.println("\n🧙 Mage:");
+        System.out.println(" - Health: 20 ❤️");
+        System.out.println(" - Attack: 10 ⚔️");
+        System.out.println(" - Defense: 5 🛡️");
+        System.out.println(" - Mana: 30 ✨");
+
+        System.out.println("🔸 Abilities:");
+        System.out.println("   • Fire Spell: -10 mana, +5 damage bonus (15 total damage before defense), ineffective vs Dragons");
+        System.out.println("   • Poison Spell: -12 mana, applies poison (-3 HP for 2 turns), normal attack damage");
+        System.out.println("   • Gain Mana: restores 20 mana");
+        System.out.println("   • Enhance Grimoire: +20 damage if you have a 'Rare Gem'");
+
+        // Warrior
+        System.out.println("\n⚔️ Warrior:");
+        System.out.println(" - Health: 30 ❤️");
+        System.out.println(" - Attack: 5 ⚔️");
+        System.out.println(" - Defense: 7 🛡️");
+        System.out.println(" - Speed: 30 🌀");
+
+        System.out.println("🔸 Abilities:");
+        System.out.println("   • Use Speed: consumes 16 speed (attacks for 2 more rounds)");
+        System.out.println("   • Gain Speed: restores 20 speed");
+        System.out.println("   • Enhance Sword: +12 damage if you have a 'Dragon Scale'");
+    }
+
 
 }

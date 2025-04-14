@@ -11,7 +11,7 @@ public class Item {
         this.value = value;
     }
 
-    public void use(Character character){}
+    public int use(Character character){return 0;}
 
     public String getName() {
         return name;

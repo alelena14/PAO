@@ -32,4 +32,9 @@ public class Dragon extends Enemy {
     public int getEnergy() {
         return energy;
     }
+
+    public void setEnergy(int energy) {
+        this.energy = energy;
+    }
+
 }
