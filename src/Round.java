@@ -45,13 +45,12 @@ public class Round {
                 case Mage mage -> {
                     boolean canUseFireSpell = mage.getMana() >= 10;
                     boolean canUsePoisonSpell = mage.getMana() >= 12;
-                    ArrayList potions = character.showPotions();
 
                     System.out.println("\n🎯 Choose your action:");
                     System.out.println("0️⃣ Quit battle");
                     System.out.println("1️⃣ 🗡️ Attack");
                     System.out.println("2️⃣ 💧 Gain Mana");
-                    if (!potions.isEmpty()) System.out.println("3️⃣ 🧪 Use Healing Potion");
+                    if (character.hasPotions()) System.out.println("3️⃣ 🧪 Use Healing Potion");
                     if (canUseFireSpell) System.out.println("4️⃣ 🔥 Use Fire Potion");
                     if (canUsePoisonSpell) System.out.println("5️⃣ ☠️ Use Poison Potion");
 
@@ -64,11 +63,13 @@ public class Round {
                         case 1 -> character.attack(enemy);
                         case 2 -> ((Mage) character).gainMana();
                         case 3 -> {
+                            ArrayList<HealthPotion> potions = character.showPotions();
                             if (!potions.isEmpty()) {
-                                System.out.println("Choose potion: ");
+                                character.showPotions();
+                                System.out.println("\nChoose potion: ");
                                 scanner.nextLine();
                                 int op = scanner.nextInt();
-                                HealthPotion hp = (HealthPotion) potions.get(op);
+                                HealthPotion hp = potions.get(op - 1);
                                 hp.use(character);
                                 character.inventory.removeItem(hp);
                             } else {
@@ -104,13 +105,12 @@ public class Round {
                 case Archer archer -> {
 
                     boolean canUseDoubleArrows = archer.getEnergy() >= 16;
-                    ArrayList potions = character.showPotions();
 
                     System.out.println("\n🎯 Choose your action:");
                     System.out.println("0️⃣ Quit battle");
                     System.out.println("1️⃣ 🗡️ Attack");
                     System.out.println("2️⃣ 🏹 Gain Energy");
-                    if (!potions.isEmpty()) System.out.println("3️⃣ 🧪 Use Healing Potion");
+                    if (character.hasPotions()) System.out.println("3️⃣ 🧪 Use Healing Potion");
                     if (canUseDoubleArrows) System.out.println("4️⃣ 🏹 Use Double Arrows");
 
                     int opt = scanner.nextInt();
@@ -119,16 +119,16 @@ public class Round {
                         case 0 -> {
                             return 0;
                         }
-                        case 1 -> {
-                            character.attack(enemy);
-                        }
+                        case 1 -> character.attack(enemy);
+
                         case 2 -> ((Archer) character).gainEnergy();
                         case 3 -> {
+                            ArrayList<HealthPotion> potions = character.showPotions();
                             if (!potions.isEmpty()) {
-                                System.out.println("Choose potion: ");
+                                System.out.println("\nChoose potion: ");
                                 scanner.nextLine();
                                 int op = scanner.nextInt();
-                                HealthPotion hp = (HealthPotion) potions.get(op);
+                                HealthPotion hp = potions.get(op - 1);
                                 hp.use(character);
                                 character.inventory.removeItem(hp);
                             } else {
@@ -154,13 +154,13 @@ public class Round {
                 case Warrior warrior -> {
 
                     boolean canSpeedUp = warrior.getSpeed() >= 16;
-                    ArrayList potions = character.showPotions();
+
 
                     System.out.println("\n🎯 Choose your action:");
                     System.out.println("0️⃣ Quit battle");
                     System.out.println("1️⃣ 🗡️ Attack");
                     System.out.println("2️⃣ ⚡ Gain Energy");
-                    if (!potions.isEmpty()) System.out.println("3️⃣ 🧪 Use Healing Potion");
+                    if (character.hasPotions()) System.out.println("3️⃣ 🧪 Use Healing Potion");
                     if (canSpeedUp) System.out.println("4️⃣ ⚡ Speed Up");
 
                     int opt = scanner.nextInt();
@@ -172,11 +172,13 @@ public class Round {
                         case 1 -> character.attack(enemy);
                         case 2 -> ((Warrior) character).gainSpeed();
                         case 3 -> {
+                            ArrayList<HealthPotion> potions = character.showPotions();
                             if (!potions.isEmpty()) {
-                                System.out.println("Choose potion: ");
+                                character.showPotions();
+                                System.out.println("\nChoose potion: ");
                                 scanner.nextLine();
                                 int op = scanner.nextInt();
-                                HealthPotion hp = (HealthPotion) potions.get(op);
+                                HealthPotion hp = potions.get(op - 1);
                                 hp.use(character);
                                 character.inventory.removeItem(hp);
                             } else {
@@ -237,7 +239,7 @@ public class Round {
                 }
                 default -> System.out.println("Unknown enemy type.");
 
-            };
+            }
 
             enemyRound -= 1;
             if(!character.isAlive())
@@ -253,7 +255,7 @@ public class Round {
             return -1;
         }
         else if(!enemy.isAlive()) {
-            ArrayList drops = enemy.drops();
+            ArrayList<Object> drops = enemy.drops();
             System.out.println("🎉 " + enemy.getClass().getSimpleName() + " defeated!");
 
             if(!drops.isEmpty()){

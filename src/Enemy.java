@@ -7,8 +7,6 @@ public abstract class Enemy {
     protected int defense;
     protected int isPoisoned = 0;
 
-    public Enemy(){}
-
     public Enemy(String name, int health, int attack, int defense) {
         this.name = name;
         this.health = health;
@@ -26,7 +24,7 @@ public abstract class Enemy {
         System.out.println(name + " attacked!");
     }
 
-    public ArrayList drops(){return null;}
+    public ArrayList<Object> drops(){return null;}
 
     public void getInfo(){
         System.out.println("\n👹 ENEMY:");
