@@ -1,6 +1,6 @@
 
 public class HealthPotion extends Item {
-    private int healAmount;
+    private final int healAmount;
 
     public HealthPotion(int healAmount, int value) {
         this.name = "Health Potion";

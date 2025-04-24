@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Service {
-    List<Character> characters = new ArrayList<Character>();
+    List<Character> characters = new ArrayList<>();
     Character currentCharacter = null;
 
     void newCharacter(){
@@ -15,9 +15,9 @@ public class Service {
 
     void getInfo(Character character){
         character.getInfo();
-        System.out.println("Level: " + character.level);
-        System.out.println("Exp: " + character.exp);
-        System.out.println("Gold: " + character.gold);
+        System.out.println("⭐ Level: " + character.level);
+        System.out.println("🧫 Exp: " + character.exp);
+        System.out.println("💰 Gold: " + character.gold);
     }
 
     void viewAllCharacters(){
@@ -178,8 +178,8 @@ public class Service {
         System.out.print("Choose a potion to buy (enter the number): ");
         int choice = scanner.nextInt();
 
-        int cost = 0;
-        HealthPotion potion = null;
+        int cost;
+        HealthPotion potion;
 
         switch (choice) {
             case 1 -> {
@@ -241,8 +241,8 @@ public class Service {
         System.out.print("Choose a weapon to buy (enter the number): ");
         int choice = scanner.nextInt();
 
-        int cost = 0;
-        Weapon weapon = null;
+        int cost;
+        Weapon weapon;
 
         switch (choice) {
             case 1 -> {
@@ -403,7 +403,7 @@ public class Service {
         System.out.println(" - Mana: 30 ✨");
 
         System.out.println("🔸 Abilities:");
-        System.out.println("   • Fire Spell: -10 mana, +5 damage bonus (15 total damage before defense), ineffective vs Dragons");
+        System.out.println("   • Fire Spell: -10 mana, +5 damage bonus, ineffective vs Dragons");
         System.out.println("   • Poison Spell: -12 mana, applies poison (-3 HP for 2 turns), normal attack damage");
         System.out.println("   • Gain Mana: restores 20 mana");
         System.out.println("   • Enhance Grimoire: +20 damage if you have a 'Rare Gem'");

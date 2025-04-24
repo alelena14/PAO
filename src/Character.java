@@ -153,7 +153,6 @@ public class Character {
     public void sellItem(Item item){
         inventory.removeItem(item);
         this.gold += item.value;
-        System.out.println(item.name + " has been sold! +" + item.value + " gold");
     }
 
     public void showInventory() {
@@ -177,20 +176,33 @@ public class Character {
         }
     }
 
-    public ArrayList showPotions() {
-        ArrayList items = inventory.getItems();
-        ArrayList potions = new ArrayList();
+    public ArrayList<HealthPotion> showPotions() {
+        ArrayList<Item> items = inventory.getItems();
+        ArrayList<HealthPotion> potions = new ArrayList<>();
         if (items.isEmpty()) {
             return potions;
         }
         for (int i = 0; i < items.size(); i++) {
-            Item currentItem = (Item) items.get(i);
+            Item currentItem = items.get(i);
             if(currentItem instanceof HealthPotion hp){
                 potions.add(hp);
-                System.out.println(i + ": " + hp.name + ", heal amount: " + hp.getHealAmount() + ", value: " + hp.getValue());
+                System.out.println(i + ") " + hp.name + ", Heal: " + hp.getHealAmount() + ", Value: " + hp.getValue());
             }
         }
         return potions;
+    }
+
+    public boolean hasPotions(){
+        ArrayList<Item> items = inventory.getItems();
+        if (items.isEmpty()) {
+            return false;
+        }
+        for (Item item : items) {
+            if (item instanceof HealthPotion) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
