@@ -1,8 +1,12 @@
+package Enemies;
+
+import Items.*;
+
 import java.util.ArrayList;
 
 public class Goblin extends Enemy {
     public Goblin() {
-        super("Goblin", 30, 8, 2);
+        super("Enemies.Goblin", 30, 8, 2);
     }
 
     @Override

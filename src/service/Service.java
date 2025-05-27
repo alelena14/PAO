@@ -1,47 +1,82 @@
+package service;
+
+import Battles.*;
+import Characters.*;
+import Characters.Character;
+import Database.CharacterService;
+import Database.InventoryService;
+import Database.ItemService;
+import Enemies.*;
+import Items.*;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
 public class Service {
-    List<Character> characters = new ArrayList<>();
-    Character currentCharacter = null;
+    static CharacterService characterService;
 
-    void newCharacter(){
-        Character character = new Character().chooseCharacter();
-        characters.add(character);
+    static {
+        try {
+            characterService = CharacterService.getInstance();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    ItemService itemService = ItemService.getInstance();
+    InventoryService inventoryService = InventoryService.getInstance();
+    static Characters.Character currentCharacter = null;
+
+    public Service() throws SQLException {
+    }
+
+    public Character getCurrentCharacter() {
+        return currentCharacter;
+    }
+
+    public void newCharacter() throws SQLException {
+        Character character = new Characters.Character().chooseCharacter();
+        characterService.createCharacter(character);
         currentCharacter = character;
     }
 
-    void getInfo(Character character){
+    public static void getInfo(Characters.Character character){
         character.getInfo();
-        System.out.println("⭐ Level: " + character.level);
-        System.out.println("🧫 Exp: " + character.exp);
-        System.out.println("💰 Gold: " + character.gold);
+        System.out.println("⭐ Level: " + character.getLevel());
+        System.out.println("🧫 Exp: " + character.getExp());
+        System.out.println("💰 Gold: " + character.getGold());
     }
 
-    void viewAllCharacters(){
-        if(characters.isEmpty()){
+    public void viewAllCharacters() throws SQLException {
+        if(characterService.countCharacters() == 0){
             System.out.println("❌ No characters.");
             return;
         }
-        for(Character character: characters){
-            getInfo(character);
-            System.out.println();
-        }
+        characterService.showAllCharacters();
     }
 
-    void chooseCurrentCharacter() {
+    public static void chooseCurrentCharacter() {
         Scanner scanner = new Scanner(System.in);
 
-        if (characters.isEmpty()) {
+        List<Characters.Character> charactersFromDb;
+        try {
+            charactersFromDb = characterService.getAllCharacters();
+        } catch (SQLException e) {
+            System.out.println("❌ Failed to load characters from database.");
+            return;
+        }
+
+        if (charactersFromDb.isEmpty()) {
             System.out.println("❌ No characters available!");
             return;
         }
 
         System.out.println("\n🎮 Choose your character:");
-        for (int i = 0; i < characters.size(); i++) {
-            Character c = characters.get(i);
+        for (int i = 0; i < charactersFromDb.size(); i++) {
+            Characters.Character c = charactersFromDb.get(i);
             String type = c.getClass().getSimpleName();
             String emoji = switch (type) {
                 case "Mage" -> "🧙";
@@ -49,11 +84,11 @@ public class Service {
                 default -> "⚔️";
             };
 
-            System.out.println(i + ") " + emoji + " " + c.name + " - ❤️ " + c.health + " HP");
+            System.out.println(i + ") " + emoji + " " + c.getName() + " - ❤️ " + c.getHealth() + " HP");
         }
 
         int choice = -1;
-        while (choice < 0 || choice >= characters.size()) {
+        while (choice < 0 || choice >= charactersFromDb.size()) {
             System.out.print("Enter the number of the character you want to play with: ");
             try {
                 choice = scanner.nextInt();
@@ -64,16 +99,22 @@ public class Service {
             }
         }
 
-        currentCharacter = characters.get(choice);
-        System.out.println("✅ You selected: " + currentCharacter.name + " the " + currentCharacter.getClass().getSimpleName() + "!");
+        Characters.Character selected = charactersFromDb.get(choice);
+
+        try {
+            currentCharacter = characterService.readCharacter(selected.getId());
+            System.out.println("✅ You selected: " + currentCharacter.getName() + " the " + currentCharacter.getClass().getSimpleName() + "!");
+        } catch (SQLException e) {
+            System.out.println("❌ Failed to load selected character from DB.");
+        }
     }
 
-    void upgradeWeapon() {
-        if (characters.isEmpty()) {
-            System.out.println("❌ No characters available!");
+    public void upgradeWeapon() throws SQLException {
+        if(characterService.countCharacters() == 0){
+            System.out.println("❌ No characters.");
             return;
         }
-        if(currentCharacter.weapon != null){
+        if(currentCharacter.getWeapon() != null){
             System.out.println("Choose option:");
             System.out.println("1) Level up your weapon");
             System.out.println("2) Enhance your weapon");
@@ -83,88 +124,110 @@ public class Service {
 
             switch (opt) {
                 case 1 -> {
-                    currentCharacter.attack -= currentCharacter.weapon.getDamage();
+                    currentCharacter.setAttack(currentCharacter.getAttack() - currentCharacter.getWeapon().getDamage());
                     currentCharacter.upgradeWeapon();
-                    currentCharacter.attack += currentCharacter.weapon.getDamage();
+                    currentCharacter.setAttack(currentCharacter.getAttack() + currentCharacter.getWeapon().getDamage());
                 }
                 case 2 ->{
                     switch (currentCharacter){
                         case Mage _ -> {
-                            currentCharacter.attack -= currentCharacter.weapon.getDamage();
+                            currentCharacter.setAttack(currentCharacter.getAttack() - currentCharacter.getWeapon().getDamage());
                             ((Mage) currentCharacter).enhanceGrimoire();
-                            currentCharacter.attack += currentCharacter.weapon.getDamage();
+                            currentCharacter.setAttack(currentCharacter.getAttack() + currentCharacter.getWeapon().getDamage());
                         }
                         case Archer _ -> {
-                            currentCharacter.attack -= currentCharacter.weapon.getDamage();
+                            currentCharacter.setAttack(currentCharacter.getAttack() - currentCharacter.getWeapon().getDamage());
                             ((Archer) currentCharacter).enhanceBow();
-                            currentCharacter.attack += currentCharacter.weapon.getDamage();
+                            currentCharacter.setAttack(currentCharacter.getAttack() + currentCharacter.getWeapon().getDamage());
                         }
                         default -> {
-                            currentCharacter.attack -= currentCharacter.weapon.getDamage();
+                            currentCharacter.setAttack(currentCharacter.getAttack() - currentCharacter.getWeapon().getDamage());
                             ((Warrior) currentCharacter).enhanceSword();
-                            currentCharacter.attack += currentCharacter.weapon.getDamage();
+                            currentCharacter.setAttack(currentCharacter.getAttack() + currentCharacter.getWeapon().getDamage());
                         }
                     }
                 }
             }
+            itemService.updateItem(currentCharacter.getWeapon());
         }else {
             System.out.println("You have no weapon equipped.");
         }
     }
 
-    void viewInventory(){
-        if (characters.isEmpty()) {
-            System.out.println("❌ No characters available!");
+    public void viewInventory() throws SQLException {
+        if(characterService.countCharacters() == 0){
+            System.out.println("❌ No characters.");
             return;
         }
-        currentCharacter.showInventory();
+        try {
+            List<Item> items = inventoryService.getInventoryForCharacter(currentCharacter.getId());
+
+            System.out.println("\n🧳 Characters.Inventory:");
+            if (items.isEmpty()) {
+                System.out.println(" - empty -");
+                return;
+            }
+
+            for (int i = 0; i < items.size(); i++) {
+                Item currentItem = items.get(i);
+                if (currentItem instanceof HealthPotion hp) {
+                    System.out.println(i + ": 🧪 " + hp.getName() + " | Heals: " + hp.getHealAmount() + " ❤️ | 💰 " + hp.getValue() + " gold");
+                } else if (currentItem instanceof Weapon wp) {
+                    System.out.println(i + ": 🗡️ " + wp.getName() + " | Level: " + wp.getLevel() + " | Damage: " + wp.getDamage() + " | 💰 " + wp.getValue() + " gold");
+                } else {
+                    System.out.println(i + ": 📦 " + currentItem.getName() + " | 💰 " + currentItem.getValue() + " gold");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Failed to load inventory.");
+            e.printStackTrace();
+        }
     }
 
-    void equipWeapon() {
-        if (characters.isEmpty()) {
-            System.out.println("❌ No characters available!");
+    public void equipWeapon() throws SQLException {
+        if(characterService.countCharacters() == 0){
+            System.out.println("❌ No characters.");
             return;
         }
-        ArrayList<Item> items = currentCharacter.inventory.getItems();
+
+        List<Item> items = inventoryService.getInventoryForCharacter(currentCharacter.getId());
         List<Weapon> weapons = new ArrayList<>();
-
-        if (items.isEmpty()) {
-            System.out.println("You have no weapons to equip!");
-            return;
-        }
-
-        for (int i = 0; i < items.size(); i++) {
-            Item currentItem = items.get(i);
-            if (currentItem instanceof Weapon wp) {
-                weapons.add(wp);
-                System.out.println(i + ": " + wp.name + ", damage: " + wp.getDamage() + ", level: " + wp.getLevel()
-                        + ", value: " + wp.getValue());
+        for (Item item : items) {
+            if (item instanceof Weapon w) {
+                weapons.add(w);
             }
         }
 
         if (weapons.isEmpty()) {
-            System.out.println("❌ No weapons found in your inventory.");
+            System.out.println("You have no weapons to equip!");
             return;
+        }
+
+        System.out.println("Available weapons:");
+        for (int i = 0; i < weapons.size(); i++) {
+            Weapon w = weapons.get(i);
+            System.out.println(i + ": " + w.getName() + ", damage: " + w.getDamage() + ", level: " + w.getLevel() + ", value: " + w.getValue());
         }
 
         System.out.println("🛡️ Choose a weapon to equip (enter the index):");
         Scanner scanner = new Scanner(System.in);
         int index = scanner.nextInt();
 
-        if (index < 0 || index >= items.size() || !(items.get(index) instanceof Weapon selectedWeapon)) {
+        if (index < 0 || index >= weapons.size()) {
             System.out.println("❌ Invalid selection.");
             return;
         }
 
+        Weapon selectedWeapon = weapons.get(index);
+
         if(selectedWeapon.use(currentCharacter) == 0) {
-            currentCharacter.inventory.removeItem(selectedWeapon);
-            System.out.println("✅ Equipped " + selectedWeapon.name + " successfully!");
+            System.out.println("✅ Equipped " + selectedWeapon.getName() + " successfully!");
         }
     }
 
-    void buyHealingPotion() {
-        if (characters.isEmpty()) {
-            System.out.println("❌ No characters available!");
+    public void buyHealingPotion() throws SQLException {
+        if(characterService.countCharacters() == 0){
+            System.out.println("❌ No characters.");
             return;
         }
         Scanner scanner = new Scanner(System.in);
@@ -204,19 +267,21 @@ public class Service {
             }
         }
 
-        if (currentCharacter.gold < cost) {
+        if (currentCharacter.getGold() < cost) {
             System.out.println("💸 Not enough gold!");
             return;
         }
 
         currentCharacter.addGold(-cost);
-        currentCharacter.inventory.addItem(potion);
+        characterService.updateCharacter(currentCharacter);
+        inventoryService.addInventoryEntry(currentCharacter.getId(), potion.getId());
+        itemService.createItem(potion);
         System.out.println("✅ You bought a " + potion.getName() + "! It's been added to your inventory.");
     }
 
-    void buyWeapon(){
-        if (characters.isEmpty()) {
-            System.out.println("❌ No characters available!");
+    public void buyWeapon() throws SQLException {
+        if(characterService.countCharacters() == 0){
+            System.out.println("❌ No characters.");
             return;
         }
         Scanner scanner = new Scanner(System.in);
@@ -292,29 +357,31 @@ public class Service {
         }
 
 
-        if (currentCharacter.gold < cost) {
+        if (currentCharacter.getGold() < cost) {
             System.out.println("💸 Not enough gold!");
             return;
         }
 
         currentCharacter.addGold(-cost);
-        currentCharacter.inventory.addItem(weapon);
+        characterService.updateCharacter(currentCharacter);
+        inventoryService.addInventoryEntry(currentCharacter.getId(), weapon.getId());
+        itemService.createItem(weapon);
         System.out.println("✅ You bought a " + weapon.getName() + "! It's been added to your inventory.");
     }
 
 
-    void sellItemFromInventory(){
-        if (characters.isEmpty()) {
-            System.out.println("❌ No characters available!");
+    public void sellItemFromInventory() throws SQLException {
+        if(characterService.countCharacters() == 0){
+            System.out.println("❌ No characters.");
             return;
         }
         Scanner scanner = new Scanner(System.in);
-        currentCharacter.showInventory();
+        this.viewInventory();
 
-        if(!currentCharacter.inventory.getItems().isEmpty()) {
+        if(!currentCharacter.getInventory().getItems().isEmpty()) {
             int index = -1;
 
-            while (index < 0 || index >= currentCharacter.inventory.getItems().size()) {
+            while (index < 0 || index >= currentCharacter.getInventory().getItems().size()) {
                 System.out.print("🔢 Choose the index of the item you want to sell (or -1 to cancel): ");
                 try {
                     index = scanner.nextInt();
@@ -327,30 +394,30 @@ public class Service {
                     System.out.println("❗ Please enter a valid number.");
                 }
             }
-            currentCharacter.sellItem(currentCharacter.inventory.getItems().get(index));
+            inventoryService.deleteInventoryEntry(currentCharacter.getId(), currentCharacter.getInventory().getItems().get(index).getId());
         }
     }
 
-    void newBattle(){
-        if (characters.isEmpty()) {
-            System.out.println("❌ No characters available!");
+    public void newBattle() throws SQLException {
+        if(characterService.countCharacters() == 0){
+            System.out.println("❌ No characters.");
             return;
         }
         Battle battle = new Battle(currentCharacter);
         if(battle.newBattle(currentCharacter) == -1)
-            characters.remove(currentCharacter);
+            characterService.deleteCharacter(currentCharacter.getId());
     }
 
-    void viewBattleVictories(){
-        if (characters.isEmpty()) {
-            System.out.println("❌ No characters available!");
+    public void viewBattleVictories() throws SQLException {
+        if(characterService.countCharacters() == 0){
+            System.out.println("❌ No characters.");
             return;
         }
         currentCharacter.printBattlesWon();
     }
 
-    void displayBattleTypes() {
-        System.out.println("🗺️ Available Battle Difficulties:\n");
+    public void displayBattleTypes() {
+        System.out.println("🗺️ Available Battles.Battle Difficulties:\n");
 
          System.out.print("🔸  Super-Easy");
          System.out.println(" - Contents: 1-3 Goblins");
@@ -359,19 +426,19 @@ public class Service {
          System.out.println(" - Contents: 4-7 Goblins");
 
          System.out.print("🔸  Normal");
-         System.out.println(" - Contents: 2 Orcs or 1-2 Goblins and 1 Orc");
+         System.out.println(" - Contents: 2 Orcs or 1-2 Goblins and 1 Enemies.Orc");
 
          System.out.print("🔸  Hard");
          System.out.println(" - Contents: 2-5 Orcs");
 
          System.out.print("🔸  Very-Hard");
-         System.out.println(" - Contents: 3 Orcs and 1 Dragon");
+         System.out.println(" - Contents: 3 Orcs and 1 Enemies.Dragon");
 
          System.out.print("🔸  Nightmare");
          System.out.println(" - Contents: 2-3 Dragons");
     }
 
-    void getEnemyInfo(){
+    public void getEnemyInfo(){
         new Goblin().getInfo();
         System.out.println();
         new Orc().getInfo();
@@ -381,10 +448,10 @@ public class Service {
     }
 
     public void showCharacterInfo() {
-        System.out.println("📜 === Character Classes ===");
+        System.out.println("📜 === Characters.Character Classes ===");
 
-        // Archer
-        System.out.println("\n🏹 Archer:");
+        // Characters.Archer
+        System.out.println("\n🏹 Characters.Archer:");
         System.out.println(" - Health: 25 ❤️");
         System.out.println(" - Attack: 8 ⚔️");
         System.out.println(" - Defense: 6 🛡️");
@@ -395,8 +462,8 @@ public class Service {
         System.out.println("   • Gain Energy: restores 20 energy");
         System.out.println("   • Enhance Bow: +20 damage if you have a 'Rare Gem'");
 
-        // Mage
-        System.out.println("\n🧙 Mage:");
+        // Characters.Mage
+        System.out.println("\n🧙 Characters.Mage:");
         System.out.println(" - Health: 20 ❤️");
         System.out.println(" - Attack: 10 ⚔️");
         System.out.println(" - Defense: 5 🛡️");
@@ -408,8 +475,8 @@ public class Service {
         System.out.println("   • Gain Mana: restores 20 mana");
         System.out.println("   • Enhance Grimoire: +20 damage if you have a 'Rare Gem'");
 
-        // Warrior
-        System.out.println("\n⚔️ Warrior:");
+        // Characters.Warrior
+        System.out.println("\n⚔️ Characters.Warrior:");
         System.out.println(" - Health: 30 ❤️");
         System.out.println(" - Attack: 5 ⚔️");
         System.out.println(" - Defense: 7 🛡️");
@@ -418,7 +485,7 @@ public class Service {
         System.out.println("🔸 Abilities:");
         System.out.println("   • Use Speed: consumes 16 speed (attacks for 2 more rounds)");
         System.out.println("   • Gain Speed: restores 20 speed");
-        System.out.println("   • Enhance Sword: +12 damage if you have a 'Dragon Scale'");
+        System.out.println("   • Enhance Sword: +12 damage if you have a 'Enemies.Dragon Scale'");
     }
 
 

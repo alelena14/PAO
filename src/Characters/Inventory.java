@@ -1,3 +1,7 @@
+package Characters;
+
+import Items.*;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -16,9 +20,9 @@ public class Inventory {
     public void removeItem(Item item) {
         if (items.contains(item)) {
             items.remove(item);
-            System.out.println(item.name + " has been removed from the inventory.");
+            System.out.println(item.getName() + " has been removed from the inventory.");
         } else {
-            System.out.println("Item not found in inventory.");
+            System.out.println("Items.Item not found in inventory.");
         }
     }
 
@@ -28,7 +32,7 @@ public class Inventory {
 
     public void addItem(Item item) {
         items.add(item);
-        items.sort(Comparator.comparingInt(i -> i.value));
+        items.sort(Comparator.comparingInt(Item::getValue));
     }
 
 }
