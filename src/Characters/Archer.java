@@ -1,4 +1,9 @@
-public class Archer extends Character{
+package Characters;
+
+import Items.*;
+import Enemies.*;
+
+public class Archer extends Character {
     private int energy;
     private int shootsDouble = -10;
 
@@ -10,6 +15,13 @@ public class Archer extends Character{
         this.defense = 6;
         this.weapon = null;
     }
+
+    public Archer(int id, String name, int health, int attack, int defense, Weapon weapon,
+                  int level, int exp, int gold, int isBurned, int energy) {
+        super(id, name, health, attack, defense, weapon, level, exp, gold, isBurned);
+        this.energy = energy;
+    }
+
 
     public void setEnergy(int energy) {
         this.energy = energy;
@@ -35,19 +47,19 @@ public class Archer extends Character{
         this.energy -= 16;
         this.attack *= 2;
         this.shootsDouble = 1;
-        enemy.health = enemy.defense >= attack ? enemy.health : enemy.health - attack + enemy.defense;
-        System.out.println("Archer is shooting Double Arrows!");
+        enemy.setHealth(enemy.getDefense() >= attack ? enemy.getHealth() : enemy.getHealth() - attack + enemy.getDefense());
+        System.out.println("Characters.Archer is shooting Double Arrows!");
     }
 
     public void gainEnergy(){
         this.energy += 20;
-        System.out.println("Archer has gained 20 Energy!");
+        System.out.println("Characters.Archer has gained 20 Energy!");
     }
 
     public void enhanceBow(){
         boolean found = false;
         for (Item item : inventory.getItems()) {
-            if (item.name.equals("Rare Gem")) {
+            if (item.getName().equals("Rare Gem")) {
                 found = true;
                 System.out.println("Bow enhanced with Rare Gem!");
                 weapon.setDamage(weapon.getDamage() + 20);

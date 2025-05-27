@@ -1,6 +1,12 @@
+package Items;
 
+import Characters.Character;
+import Database.ItemService;
+
+import java.sql.SQLException;
 
 public class Item {
+    protected int id;
     protected String name;
     protected int value;
 
@@ -11,7 +17,7 @@ public class Item {
         this.value = value;
     }
 
-    public int use(Character character){return 0;}
+    public int use(Character character) throws SQLException {return 0;}
 
     public String getName() {
         return name;
@@ -19,5 +25,13 @@ public class Item {
 
     public int getValue() {
         return value;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 }

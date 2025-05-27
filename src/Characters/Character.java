@@ -1,9 +1,18 @@
+package Characters;
+
+import Database.BattlesWonService;
+import Items.*;
+import Enemies.*;
+import Battles.*;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Scanner;
 
 public class Character {
+    protected int id;
     protected String name;
     protected int health;
     protected int attack;
@@ -17,6 +26,19 @@ public class Character {
     private final Map<Battle.Difficulty, Integer> battlesWon = new EnumMap<>(Battle.Difficulty.class);
 
     public Character(){}
+
+    public Character(int id, String name, int health, int attack, int defense, Weapon weapon, int level, int exp, int gold, int isBurned) {
+        this.id = id;
+        this.name = name;
+        this.health = health;
+        this.attack = attack;
+        this.defense = defense;
+        this.weapon = weapon;
+        this.level = level;
+        this.exp = exp;
+        this.gold = gold;
+        this.isBurned = isBurned;
+    }
 
     public void setStats(Character other) {
         this.name = other.name;
@@ -71,7 +93,11 @@ public class Character {
             switch (this) {
                 case Mage _ -> ((Mage) this).addMana(10);
                 case Warrior _ -> ((Warrior) this).addSpeed(10);
-                case Archer _ -> ((Archer) this).addEnergy(10);
+                case Archer _ -> {
+                    ((Archer) this).addEnergy(10);
+                    if(((Archer) this).getShootsDouble() > 0)
+                        this.attack += 10;
+                }
                 default -> {
                 }
             }
@@ -96,13 +122,13 @@ public class Character {
             this.gold -= 25;
             weapon.setLevel(weapon.getLevel() + 1);
             weapon.setDamage(weapon.getDamage() + 8);
-            System.out.println(weapon.name + " is now level " + weapon.getLevel() + "!");
+            System.out.println(weapon.getName() + " is now level " + weapon.getLevel() + "!");
         }
     }
 
     public void attack(Enemy enemy){
-        enemy.health = enemy.defense >= attack ? enemy.health : enemy.health - attack + enemy.defense;
-        enemy.health = Math.max(enemy.health, 0);
+        enemy.setHealth(enemy.getDefense() >= attack ? enemy.getHealth() : enemy.getHealth() - attack + enemy.getDefense());
+        enemy.setHealth(Math.max(enemy.getHealth(), 0));
         switch (this) {
             case Mage _ -> System.out.println("Mage used Attack!");
             case Warrior _ -> System.out.println("Warrior used Attack!");
@@ -118,6 +144,7 @@ public class Character {
 
     public void getInfo(){
         System.out.println("\n🧙 CHARACTER STATUS:");
+        System.out.println("#" + this.getId());
         System.out.println("📛 Name: " + this.name);
         System.out.println("❤️ HP: " + this.health);
         System.out.println("🗡️ Attack: " + this.attack);
@@ -129,30 +156,35 @@ public class Character {
             }
         }
         if(weapon!=null)
-            System.out.println("🗡️ Weapon: " + this.weapon.name);
+            System.out.println("🗡️ Items.Weapon: " + this.weapon.getName());
 
     }
 
-    public void printBattlesWon() {
-        for (Map.Entry<Battle.Difficulty, Integer> entry : battlesWon.entrySet()) {
+    public void printBattlesWon() throws SQLException {
+        for (Map.Entry<String, Integer> entry : BattlesWonService.getInstance().getWinsForCharacter(this.getId()).entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
     }
 
-    public void incrementBattlesWon(Battle.Difficulty difficulty) {
-        battlesWon.merge(difficulty, 1, Integer::sum);
+    public void incrementBattlesWon(Battle.Difficulty difficulty) throws SQLException {
+        if(BattlesWonService.getInstance().getWinsForDifficulty(this.getId(), String.valueOf(difficulty)) > 0){
+            BattlesWonService.getInstance().updateWins(this.getId(), String.valueOf(difficulty), 1);
+        } else {
+            BattlesWonService.getInstance().addBattleWinEntry(this.getId(), String.valueOf(difficulty), 1);
+        }
+        // battlesWon.merge(difficulty, 1, Integer::sum);
     }
 
     /////////////////// Inventory //////////////////////
 
     public void addItemToInventory(Item item) {
         inventory.addItem(item);
-        System.out.println(item.name + " added to inventory.");
+        System.out.println(item.getName() + " added to inventory.");
     }
 
     public void sellItem(Item item){
         inventory.removeItem(item);
-        this.gold += item.value;
+        this.gold += item.getValue();
     }
 
     public void showInventory() {
@@ -167,9 +199,9 @@ public class Character {
         for (int i = 0; i < items.size(); i++) {
             Item currentItem = items.get(i);
             if (currentItem instanceof HealthPotion hp) {
-                System.out.println(i + ": 🧪 " + hp.name + " | Heals: " + hp.getHealAmount() + " ❤️ | 💰 " + hp.getValue() + " gold");
+                System.out.println(i + ": 🧪 " + hp.getName() + " | Heals: " + hp.getHealAmount() + " ❤️ | 💰 " + hp.getValue() + " gold");
             } else if (currentItem instanceof Weapon wp) {
-                System.out.println(i + ": 🗡️ " + wp.name + " | Level: " + wp.getLevel() + " | Damage: " + wp.getDamage() + " | 💰 " + wp.getValue() + " gold");
+                System.out.println(i + ": 🗡️ " + wp.getName() + " | Level: " + wp.getLevel() + " | Damage: " + wp.getDamage() + " | 💰 " + wp.getValue() + " gold");
             } else {
                 System.out.println(i + ": 📦 " + currentItem.getName() + " | 💰 " + currentItem.getValue() + " gold");
             }
@@ -186,7 +218,7 @@ public class Character {
             Item currentItem = items.get(i);
             if(currentItem instanceof HealthPotion hp){
                 potions.add(hp);
-                System.out.println(i + ") " + hp.name + ", Heal: " + hp.getHealAmount() + ", Value: " + hp.getValue());
+                System.out.println(i + ") " + hp.getName() + ", Heal: " + hp.getHealAmount() + ", Value: " + hp.getValue());
             }
         }
         return potions;
@@ -206,5 +238,83 @@ public class Character {
     }
 
 
+    public String getName() {
+        return name;
+    }
 
+    public int getHealth() {
+        return health;
+    }
+
+    public int getAttack() {
+        return attack;
+    }
+
+    public int getDefense() {
+        return defense;
+    }
+
+    public Weapon getWeapon() {
+        return weapon;
+    }
+
+    public int getIsBurned() {
+        return isBurned;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int getExp() {
+        return exp;
+    }
+
+    public int getGold() {
+        return gold;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    public void setAttack(int attack) {
+        this.attack = attack;
+    }
+
+    public void setDefense(int defense) {
+        this.defense = defense;
+    }
+
+    public void setWeapon(Weapon weapon) {
+        this.weapon = weapon;
+    }
+
+    public void setIsBurned(int isBurned) {
+        this.isBurned = isBurned;
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public void setExp(int exp) {
+        this.exp = exp;
+    }
+
+    public void setGold(int gold) {
+        this.gold = gold;
+    }
+
+    public int getId() { return id;}
+
+    public void setId(int id) { this.id = id;}
 }

@@ -1,12 +1,20 @@
+package Battles;
+
+import Characters.*;
+import Characters.Character;
+import Enemies.*;
+import Enemies.Goblin;
+import Items.*;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Round {
 
-    private final Character character;
+    private final Characters.Character character;
     private final Enemy enemy;
 
-    public Round(Character character, Enemy enemy) {
+    public Round(Characters.Character character, Enemies.Enemy enemy) {
         this.character = character;
         this.enemy = enemy;
     }
@@ -27,20 +35,20 @@ public class Round {
                 }
 
                 if (isShooting == -1) {
-                    character.attack /= 2;
+                    character.setAttack(character.getAttack() / 2);
                     archer.setShootsDouble(-10);
                 }
             }
             character.getInfo();
 
-            if (character.isBurned > 0) {
-                character.isBurned -= 1;
-                character.health -= 2;
+            if (character.getIsBurned() > 0) {
+                character.setIsBurned(character.getIsBurned() - 1);
+                character.setHealth(character.getHealth() - 2);
                 System.out.println("🔥 You are burned! Lost 2 HP.");
             }
 
 
-            // Mage
+            // Characters.Mage
             switch (character) {
                 case Mage mage -> {
                     boolean canUseFireSpell = mage.getMana() >= 10;
@@ -71,7 +79,7 @@ public class Round {
                                 int op = scanner.nextInt();
                                 HealthPotion hp = potions.get(op - 1);
                                 hp.use(character);
-                                character.inventory.removeItem(hp);
+                                character.getInventory().removeItem(hp);
                             } else {
                                 System.out.println("Invalid option, defaulting to Attack.");
                                 character.attack(enemy);
@@ -101,7 +109,7 @@ public class Round {
 
 
                 }
-                // Archer
+                // Characters.Archer
                 case Archer archer -> {
 
                     boolean canUseDoubleArrows = archer.getEnergy() >= 16;
@@ -130,7 +138,7 @@ public class Round {
                                 int op = scanner.nextInt();
                                 HealthPotion hp = potions.get(op - 1);
                                 hp.use(character);
-                                character.inventory.removeItem(hp);
+                                ((Archer) character).getInventory().removeItem(hp);
                             } else {
                                 System.out.println("Invalid option, defaulting to Attack.");
                                 character.attack(enemy);
@@ -150,7 +158,7 @@ public class Round {
                         }
                     }
                 }
-                // Warrior
+                // Characters.Warrior
                 case Warrior warrior -> {
 
                     boolean canSpeedUp = warrior.getSpeed() >= 16;
@@ -180,7 +188,7 @@ public class Round {
                                 int op = scanner.nextInt();
                                 HealthPotion hp = potions.get(op - 1);
                                 hp.use(character);
-                                character.inventory.removeItem(hp);
+                                ((Warrior) character).getInventory().removeItem(hp);
                             } else {
                                 System.out.println("Invalid option, defaulting to Attack.");
                                 character.attack(enemy);
@@ -214,23 +222,23 @@ public class Round {
         while(enemyRound > 0 && enemy.isAlive()){
             enemy.getInfo();
 
-            if (enemy.isPoisoned > 0) {
-                enemy.isPoisoned -= 1;
-                enemy.health -= 3;
-                System.out.println("☠️ Enemy is poisoned! -3 HP.");
+            if (enemy.getIsPoisoned() > 0) {
+                enemy.setIsPoisoned(enemy.getIsPoisoned() - 1);
+                enemy.setHealth(enemy.getHealth() - 3);
+                System.out.println("☠️ Enemies.Enemy is poisoned! -3 HP.");
             }
 
 
-            switch (enemy.getClass().getSimpleName()) {
-                case "Goblin" -> enemy.attack(character);
-                case "Orc" -> {
+            switch (enemy) {
+                case Goblin _ -> enemy.attack(character);
+                case Orc _ -> {
                     if (((Orc) enemy).getEnergy() >= 11)
                         ((Orc) enemy).throwAxe(character);
                     else
                         enemy.attack(character);
                     ((Orc) enemy).setEnergy(((Orc) enemy).getEnergy() + 3); // gets 3 energy at the end of the round
                 }
-                case "Dragon" -> {
+                case Dragon _ -> {
                     if (((Dragon) enemy).getEnergy() >= 18)
                         ((Dragon) enemy).breatheFire(character);
                     else
@@ -249,9 +257,9 @@ public class Round {
         return 1;
     }
 
-    private int endRound(Character character, Enemy enemy){
+    private int endRound(Characters.Character character, Enemy enemy){
         if(!character.isAlive()){
-            System.out.println("☠️ " + character.name + " has fallen in battle...");
+            System.out.println("☠️ " + character.getName() + " has fallen in battle...");
             return -1;
         }
         else if(!enemy.isAlive()) {

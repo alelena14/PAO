@@ -1,9 +1,19 @@
+import service.Service;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
-    static Service service = new Service();
+    static Service service;
 
-    public static void main(String[] args) {
+    static {
+        try {
+            service = new Service();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String[] args) throws SQLException {
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
 
@@ -32,7 +42,7 @@ public class Main {
             switch (choice) {
                 case 1 -> service.newCharacter();
                 case 2 -> service.viewAllCharacters();
-                case 3 -> service.chooseCurrentCharacter();
+                case 3 -> Service.chooseCurrentCharacter();
                 case 4 -> service.viewInventory();
                 case 5 -> service.equipWeapon();
                 case 6 -> service.upgradeWeapon();
@@ -43,7 +53,7 @@ public class Main {
                 case 11 -> service.viewBattleVictories();
                 case 12 -> service.displayBattleTypes();
                 case 13 -> service.getEnemyInfo();
-                case 14 -> service.getInfo(service.currentCharacter);
+                case 14 -> service.getInfo(service.getCurrentCharacter());
                 case 15 -> service.showCharacterInfo();
                 case 16 -> {
                     running = false;

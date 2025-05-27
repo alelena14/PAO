@@ -1,3 +1,7 @@
+package Enemies;
+
+import Characters.Character;
+
 import java.util.ArrayList;
 
 public abstract class Enemy {
@@ -19,8 +23,8 @@ public abstract class Enemy {
     }
 
     public void attack(Character character){
-        character.health = character.defense >= attack ? character.health : character.health - attack +character.defense;
-        character.health = Math.max(character.health, 0);
+        character.setHealth(character.getDefense() >= attack ? character.getHealth() : character.getHealth() - attack + character.getDefense());
+        character.setHealth(Math.max(character.getHealth(), 0));
         System.out.println(name + " attacked!");
     }
 
@@ -34,4 +38,39 @@ public abstract class Enemy {
 
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public int getAttack() {
+        return attack;
+    }
+
+    public int getDefense() {
+        return defense;
+    }
+
+    public int getIsPoisoned() {
+        return isPoisoned;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    public void setAttack(int attack) {
+        this.attack = attack;
+    }
+
+    public void setDefense(int defense) {
+        this.defense = defense;
+    }
+
+    public void setIsPoisoned(int isPoisoned) {
+        this.isPoisoned = isPoisoned;
+    }
 }
