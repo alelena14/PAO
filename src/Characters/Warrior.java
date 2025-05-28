@@ -1,7 +1,10 @@
 package Characters;
 
+import Database.InventoryService;
 import Enemies.*;
 import Items.*;
+
+import java.sql.SQLException;
 
 public class Warrior extends Character {
     private int speed;
@@ -40,22 +43,22 @@ public class Warrior extends Character {
 
     public void gainSpeed(){
         this.speed += 20;
-        System.out.println("Characters.Warrior has gained 20 Speed!");
+        System.out.println("Warrior has gained 20 Speed!");
     }
 
-    public void enhanceSword(){
+    public void enhanceSword() throws SQLException {
         boolean found = false;
-        for (Item item : inventory.getItems()) {
-            if (item.getName().equals("Enemies.Dragon Scale")) {
+        for (Item item : InventoryService.getInstance().getInventoryForCharacter(this.id)) {
+            if (item.getName().equals("Dragon Scale")) {
                 found = true;
-                System.out.println("Sword enhanced with Enemies.Dragon Scale!");
+                System.out.println("Sword enhanced with Dragon Scale!");
                 weapon.setDamage(weapon.getDamage() + 12);
                 inventory.removeItem(item);
                 break;
             }
         }
         if(!found)
-            System.out.println("You do not have a Enemies.Dragon Scale!");
+            System.out.println("You do not have a Dragon Scale!");
     }
 
 }

@@ -53,7 +53,7 @@ public class Main {
                 case 11 -> service.viewBattleVictories();
                 case 12 -> service.displayBattleTypes();
                 case 13 -> service.getEnemyInfo();
-                case 14 -> service.getInfo(service.getCurrentCharacter());
+                case 14 -> Service.getInfo(service.getCurrentCharacter());
                 case 15 -> service.showCharacterInfo();
                 case 16 -> {
                     running = false;
