@@ -1,7 +1,10 @@
 package Characters;
 
+import Database.InventoryService;
 import Enemies.*;
 import Items.*;
+
+import java.sql.SQLException;
 
 public class Mage extends Character {
     private int mana;
@@ -42,7 +45,7 @@ public class Mage extends Character {
             this.mana -= 10;
             enemy.setHealth(enemy.getDefense() >= attack + 5 ? enemy.getHealth() : enemy.getHealth() - (attack + 5) + enemy.getDefense());
             enemy.setHealth(Math.max(enemy.getHealth(), 0));
-            System.out.println("Characters.Mage used Fire Spell!");
+            System.out.println("Mage used Fire Spell!");
         }
     }
 
@@ -51,18 +54,18 @@ public class Mage extends Character {
         enemy.setHealth(enemy.getDefense() >= attack ? enemy.getHealth() : enemy.getHealth() - attack + enemy.getDefense());
         enemy.setHealth(Math.max(enemy.getHealth(), 0));
         enemy.setIsPoisoned(enemy.getIsPoisoned() + 2);
-        System.out.println("Characters.Mage used Poison Spell!");
+        System.out.println("Mage used Poison Spell!");
     }
 
 
     public void gainMana(){
         this.mana += 20;
-        System.out.println("Characters.Mage has gained 20 Mana!");
+        System.out.println("Mage has gained 20 Mana!");
     }
 
-    public void enhanceGrimoire(){
+    public void enhanceGrimoire() throws SQLException {
         boolean found = false;
-        for (Item item : inventory.getItems()) {
+        for (Item item : InventoryService.getInstance().getInventoryForCharacter(this.id)) {
             if (item.getName().equals("Rare Gem")) {
                 found = true;
                 System.out.println("Book enhanced with Rare Gem!");

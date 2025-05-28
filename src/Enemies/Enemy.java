@@ -2,6 +2,7 @@ package Enemies;
 
 import Characters.Character;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public abstract class Enemy {
@@ -28,7 +29,7 @@ public abstract class Enemy {
         System.out.println(name + " attacked!");
     }
 
-    public ArrayList<Object> drops(){return null;}
+    public ArrayList<Object> drops() throws SQLException {return null;}
 
     public void getInfo(){
         System.out.println("\n👹 ENEMY:");

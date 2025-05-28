@@ -51,7 +51,7 @@ public class Service {
     }
 
     public void viewAllCharacters() throws SQLException {
-        if(characterService.countCharacters() == 0){
+        if(characterService.countCharacters() == 0 || getCurrentCharacter() == null){
             System.out.println("❌ No characters.");
             return;
         }
@@ -110,7 +110,7 @@ public class Service {
     }
 
     public void upgradeWeapon() throws SQLException {
-        if(characterService.countCharacters() == 0){
+        if(characterService.countCharacters() == 0 || getCurrentCharacter() == null){
             System.out.println("❌ No characters.");
             return;
         }
@@ -155,14 +155,14 @@ public class Service {
     }
 
     public void viewInventory() throws SQLException {
-        if(characterService.countCharacters() == 0){
+        if(characterService.countCharacters() == 0 || getCurrentCharacter() == null){
             System.out.println("❌ No characters.");
             return;
         }
         try {
             List<Item> items = inventoryService.getInventoryForCharacter(currentCharacter.getId());
 
-            System.out.println("\n🧳 Characters.Inventory:");
+            System.out.println("\n🧳 Inventory:");
             if (items.isEmpty()) {
                 System.out.println(" - empty -");
                 return;
@@ -185,7 +185,7 @@ public class Service {
     }
 
     public void equipWeapon() throws SQLException {
-        if(characterService.countCharacters() == 0){
+        if(characterService.countCharacters() == 0 || getCurrentCharacter() == null){
             System.out.println("❌ No characters.");
             return;
         }
@@ -226,7 +226,7 @@ public class Service {
     }
 
     public void buyHealingPotion() throws SQLException {
-        if(characterService.countCharacters() == 0){
+        if(characterService.countCharacters() == 0 || getCurrentCharacter() == null){
             System.out.println("❌ No characters.");
             return;
         }
@@ -274,13 +274,14 @@ public class Service {
 
         currentCharacter.addGold(-cost);
         characterService.updateCharacter(currentCharacter);
-        inventoryService.addInventoryEntry(currentCharacter.getId(), potion.getId());
         itemService.createItem(potion);
+        inventoryService.addInventoryEntry(currentCharacter.getId(), potion.getId());
+        currentCharacter.getInventory().getItems().add(potion);
         System.out.println("✅ You bought a " + potion.getName() + "! It's been added to your inventory.");
     }
 
     public void buyWeapon() throws SQLException {
-        if(characterService.countCharacters() == 0){
+        if(characterService.countCharacters() == 0 || getCurrentCharacter() == null){
             System.out.println("❌ No characters.");
             return;
         }
@@ -364,24 +365,25 @@ public class Service {
 
         currentCharacter.addGold(-cost);
         characterService.updateCharacter(currentCharacter);
-        inventoryService.addInventoryEntry(currentCharacter.getId(), weapon.getId());
         itemService.createItem(weapon);
+        inventoryService.addInventoryEntry(currentCharacter.getId(), weapon.getId());
         System.out.println("✅ You bought a " + weapon.getName() + "! It's been added to your inventory.");
     }
 
 
     public void sellItemFromInventory() throws SQLException {
-        if(characterService.countCharacters() == 0){
+        if(characterService.countCharacters() == 0 || getCurrentCharacter() == null){
             System.out.println("❌ No characters.");
             return;
         }
         Scanner scanner = new Scanner(System.in);
         this.viewInventory();
 
-        if(!currentCharacter.getInventory().getItems().isEmpty()) {
+        List<Item> items = inventoryService.getInventoryForCharacter(currentCharacter.getId());
+        if(!items.isEmpty()) {
             int index = -1;
 
-            while (index < 0 || index >= currentCharacter.getInventory().getItems().size()) {
+            while (index < 0 || index >= items.size()) {
                 System.out.print("🔢 Choose the index of the item you want to sell (or -1 to cancel): ");
                 try {
                     index = scanner.nextInt();
@@ -394,12 +396,14 @@ public class Service {
                     System.out.println("❗ Please enter a valid number.");
                 }
             }
-            inventoryService.deleteInventoryEntry(currentCharacter.getId(), currentCharacter.getInventory().getItems().get(index).getId());
+            inventoryService.deleteInventoryEntry(currentCharacter.getId(), items.get(index).getId());
+            currentCharacter.sellItem(items.get(index));
+            characterService.updateCharacter(currentCharacter);
         }
     }
 
     public void newBattle() throws SQLException {
-        if(characterService.countCharacters() == 0){
+        if(characterService.countCharacters() == 0 || getCurrentCharacter() == null){
             System.out.println("❌ No characters.");
             return;
         }
@@ -409,7 +413,7 @@ public class Service {
     }
 
     public void viewBattleVictories() throws SQLException {
-        if(characterService.countCharacters() == 0){
+        if(characterService.countCharacters() == 0 || getCurrentCharacter() == null){
             System.out.println("❌ No characters.");
             return;
         }
@@ -417,7 +421,7 @@ public class Service {
     }
 
     public void displayBattleTypes() {
-        System.out.println("🗺️ Available Battles.Battle Difficulties:\n");
+        System.out.println("🗺️ Available Battle Difficulties:\n");
 
          System.out.print("🔸  Super-Easy");
          System.out.println(" - Contents: 1-3 Goblins");
@@ -426,13 +430,13 @@ public class Service {
          System.out.println(" - Contents: 4-7 Goblins");
 
          System.out.print("🔸  Normal");
-         System.out.println(" - Contents: 2 Orcs or 1-2 Goblins and 1 Enemies.Orc");
+         System.out.println(" - Contents: 2 Orcs or 1-2 Goblins and 1 Orc");
 
          System.out.print("🔸  Hard");
          System.out.println(" - Contents: 2-5 Orcs");
 
          System.out.print("🔸  Very-Hard");
-         System.out.println(" - Contents: 3 Orcs and 1 Enemies.Dragon");
+         System.out.println(" - Contents: 3 Orcs and 1 Dragon");
 
          System.out.print("🔸  Nightmare");
          System.out.println(" - Contents: 2-3 Dragons");
@@ -448,10 +452,10 @@ public class Service {
     }
 
     public void showCharacterInfo() {
-        System.out.println("📜 === Characters.Character Classes ===");
+        System.out.println("📜 === Character Classes ===");
 
         // Characters.Archer
-        System.out.println("\n🏹 Characters.Archer:");
+        System.out.println("\n🏹 Archer:");
         System.out.println(" - Health: 25 ❤️");
         System.out.println(" - Attack: 8 ⚔️");
         System.out.println(" - Defense: 6 🛡️");
@@ -463,7 +467,7 @@ public class Service {
         System.out.println("   • Enhance Bow: +20 damage if you have a 'Rare Gem'");
 
         // Characters.Mage
-        System.out.println("\n🧙 Characters.Mage:");
+        System.out.println("\n🧙 Mage:");
         System.out.println(" - Health: 20 ❤️");
         System.out.println(" - Attack: 10 ⚔️");
         System.out.println(" - Defense: 5 🛡️");
@@ -476,7 +480,7 @@ public class Service {
         System.out.println("   • Enhance Grimoire: +20 damage if you have a 'Rare Gem'");
 
         // Characters.Warrior
-        System.out.println("\n⚔️ Characters.Warrior:");
+        System.out.println("\n⚔️ Warrior:");
         System.out.println(" - Health: 30 ❤️");
         System.out.println(" - Attack: 5 ⚔️");
         System.out.println(" - Defense: 7 🛡️");
@@ -485,7 +489,7 @@ public class Service {
         System.out.println("🔸 Abilities:");
         System.out.println("   • Use Speed: consumes 16 speed (attacks for 2 more rounds)");
         System.out.println("   • Gain Speed: restores 20 speed");
-        System.out.println("   • Enhance Sword: +12 damage if you have a 'Enemies.Dragon Scale'");
+        System.out.println("   • Enhance Sword: +12 damage if you have a 'Dragon Scale'");
     }
 
 

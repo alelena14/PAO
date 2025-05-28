@@ -6,6 +6,7 @@ import Characters.Mage;
 import Characters.Warrior;
 import Database.CharacterService;
 import Database.InventoryService;
+import Database.ItemService;
 
 import java.sql.SQLException;
 
@@ -34,49 +35,35 @@ public class Weapon extends Item {
     public int use(Character character) throws SQLException {
         InventoryService inventoryService = InventoryService.getInstance();
         CharacterService characterService = CharacterService.getInstance();
-        switch (character) {
-            case Mage _ when "Grimoire".equals(this.type) -> {
-                if(character.getWeapon() != null){
-                    // this = noua arma care se afla in mom asta in inventar
-                    // ii dau update si in locul ei o pun pe cea pe care o am equipped
-                    inventoryService.updateInventoryEntry(character.getId(), this.getId(), character.getWeapon().getId());
-                    System.out.println("🔁 You already have a weapon equipped: " + character.getWeapon().name);
-                    System.out.println("It will be returned to your inventory.");
-                    character.setAttack(character.getAttack() - character.getWeapon().getDamage());
-                }
-                // dau equip la noua arma
-                character.equipWeapon(this);
-                characterService.updateCharacter(character);
-                return 0;
-            }
-            case Warrior _ when "Sword".equals(this.type) -> {
-                if(character.getWeapon() != null){
-                    inventoryService.updateInventoryEntry(character.getId(), this.getId(), character.getWeapon().getId());
-                    System.out.println("🔁 You already have a weapon equipped: " + character.getWeapon().name);
-                    System.out.println("It will be returned to your inventory.");
-                    character.setAttack(character.getAttack() - character.getWeapon().getDamage());
-                }
-                character.equipWeapon(this);
-                characterService.updateCharacter(character);
-                return 0;
-            }
-            case Archer _ when "Bow".equals(this.type) -> {
-                if(character.getWeapon() != null){
-                    inventoryService.updateInventoryEntry(character.getId(), this.getId(), character.getWeapon().getId());
-                    System.out.println("🔁 You already have a weapon equipped: " + character.getWeapon().name);
-                    System.out.println("It will be returned to your inventory.");
-                    character.setAttack(character.getAttack() - character.getWeapon().getDamage());
-                }
-                character.equipWeapon(this);
-                characterService.updateCharacter(character);
-                return 0;
-            }
-            default -> {
-                System.out.println("❌ Cannot equip this weapon type!");
-                return -1;
-            }
+
+        boolean canEquip = (character instanceof Mage && "Grimoire".equals(this.type)) ||
+                (character instanceof Warrior && "Sword".equals(this.type)) ||
+                (character instanceof Archer && "Bow".equals(this.type));
+
+        if (!canEquip) {
+            System.out.println("❌ Cannot equip this weapon type!");
+            return -1;
         }
+
+        Weapon currentWeapon = character.getWeapon();
+
+        if (currentWeapon != null) {
+            inventoryService.updateInventoryEntry(character.getId(), this.getId(), currentWeapon.getId());
+
+            System.out.println("🔁 You already have a weapon equipped: " + currentWeapon.getName());
+            System.out.println("It will be returned to your inventory.");
+
+            character.setAttack(character.getAttack() - currentWeapon.getDamage());
+        } else {
+            inventoryService.deleteInventoryEntry(character.getId(), this.getId());
+        }
+
+        character.equipWeapon(this);
+        characterService.updateCharacter(character);
+
+        return 0;
     }
+
 
     public int getDamage() {
         return damage;

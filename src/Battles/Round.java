@@ -2,10 +2,12 @@ package Battles;
 
 import Characters.*;
 import Characters.Character;
+import Database.InventoryService;
 import Enemies.*;
 import Enemies.Goblin;
 import Items.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -19,7 +21,7 @@ public class Round {
         this.enemy = enemy;
     }
 
-    public int newRound(){
+    public int newRound() throws SQLException {
         int characterRound = 1;
         int enemyRound = 1;
         Scanner scanner = new Scanner(System.in);
@@ -257,7 +259,7 @@ public class Round {
         return 1;
     }
 
-    private int endRound(Characters.Character character, Enemy enemy){
+    private int endRound(Characters.Character character, Enemy enemy) throws SQLException {
         if(!character.isAlive()){
             System.out.println("☠️ " + character.getName() + " has fallen in battle...");
             return -1;
@@ -278,7 +280,15 @@ public class Round {
 
                 if(!drops.isEmpty()) {
                     for (var item : drops) {
-                        character.addItemToInventory((Item) item);
+                        switch(item){
+                            case Weapon w -> InventoryService.getInstance().addInventoryEntry(character.getId(), w.getId());
+                            case HealthPotion h -> InventoryService.getInstance().addInventoryEntry(character.getId(), h.getId());
+                            case Item i -> InventoryService.getInstance().addInventoryEntry(character.getId(), i.getId());
+
+                            default -> System.out.println("Unknown item type. " + item.getClass().getSimpleName());
+                        }
+                        assert item instanceof Item;
+                        System.out.println("   " + ((Item) item).getName());
                     }
                 }
             }

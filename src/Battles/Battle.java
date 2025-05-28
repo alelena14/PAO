@@ -91,6 +91,7 @@ public class Battle {
                     w.setSpeed(30 + (character.getLevel() - savedState.getLevel()) * 10);
             default -> throw new IllegalStateException("Unexpected value: " + character.getClass().getSimpleName());
         }
+        CharacterService.getInstance().updateCharacter(character);
 
     }
 

@@ -1,15 +1,17 @@
 package Enemies;
 
 import Characters.Character;
+import Database.ItemService;
 import Items.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Orc extends Enemy {
     private int energy = 20;
 
     public Orc() {
-        super("Enemies.Orc", 45, 15, 5);
+        super("Orc", 45, 15, 5);
     }
 
     public void throwAxe(Character character){
@@ -20,13 +22,18 @@ public class Orc extends Enemy {
     }
 
     @Override
-    public ArrayList<Object> drops(){
+    public ArrayList<Object> drops() throws SQLException {
         ArrayList<Object> drops = new ArrayList<>();
         drops.add(40); // gold
         drops.add(50); // exp
-        drops.add(new Weapon("Enemies.Goblin's Axe", 15, "Sword", 30));
-        if(Math.random() < 0.25)
-            drops.add(new Item("Enemies.Orc Eye", 20));
+        Weapon w = new Weapon("Goblin's Axe", 15, "Sword", 30);
+        drops.add(w);
+        ItemService.getInstance().createItem(w);
+        if(Math.random() < 0.25) {
+            Item i = new Item("Orc Eye", 20);
+            drops.add(i);
+            ItemService.getInstance().createItem(i);
+        }
 
         return drops;
     }

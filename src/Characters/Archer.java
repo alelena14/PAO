@@ -1,7 +1,11 @@
 package Characters;
 
+import Database.InventoryService;
 import Items.*;
 import Enemies.*;
+
+import java.sql.SQLException;
+import java.util.List;
 
 public class Archer extends Character {
     private int energy;
@@ -48,17 +52,17 @@ public class Archer extends Character {
         this.attack *= 2;
         this.shootsDouble = 1;
         enemy.setHealth(enemy.getDefense() >= attack ? enemy.getHealth() : enemy.getHealth() - attack + enemy.getDefense());
-        System.out.println("Characters.Archer is shooting Double Arrows!");
+        System.out.println("Archer is shooting Double Arrows!");
     }
 
     public void gainEnergy(){
         this.energy += 20;
-        System.out.println("Characters.Archer has gained 20 Energy!");
+        System.out.println("Archer has gained 20 Energy!");
     }
 
-    public void enhanceBow(){
+    public void enhanceBow() throws SQLException {
         boolean found = false;
-        for (Item item : inventory.getItems()) {
+        for (Item item : InventoryService.getInstance().getInventoryForCharacter(this.id)) {
             if (item.getName().equals("Rare Gem")) {
                 found = true;
                 System.out.println("Bow enhanced with Rare Gem!");

@@ -1,6 +1,7 @@
 package Characters;
 
 import Database.BattlesWonService;
+import Database.CharacterService;
 import Items.*;
 import Enemies.*;
 import Battles.*;
@@ -82,7 +83,7 @@ public class Character {
         this.gold += gold;
     }
 
-    public void addExp(int exp){
+    public void addExp(int exp) throws SQLException {
         this.exp += exp;
 
         if(this.exp >= 100){
@@ -102,6 +103,7 @@ public class Character {
                 }
             }
             System.out.println(name + " has now level " + level + "!");
+            CharacterService.getInstance().updateCharacter(this);
         }
     }
 
@@ -156,7 +158,7 @@ public class Character {
             }
         }
         if(weapon!=null)
-            System.out.println("🗡️ Items.Weapon: " + this.weapon.getName());
+            System.out.println("🗡️ Weapon: " + this.weapon.getName());
 
     }
 
@@ -183,7 +185,7 @@ public class Character {
     }
 
     public void sellItem(Item item){
-        inventory.removeItem(item);
+        // inventory.removeItem(item);
         this.gold += item.getValue();
     }
 
