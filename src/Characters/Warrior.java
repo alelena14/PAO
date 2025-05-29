@@ -1,7 +1,7 @@
 package Characters;
 
 import Database.InventoryService;
-import Enemies.*;
+import Database.ItemService;
 import Items.*;
 
 import java.sql.SQLException;
@@ -53,7 +53,8 @@ public class Warrior extends Character {
                 found = true;
                 System.out.println("Sword enhanced with Dragon Scale!");
                 weapon.setDamage(weapon.getDamage() + 12);
-                inventory.removeItem(item);
+                InventoryService.getInstance().deleteInventoryEntry(this.id, item.getId());
+                ItemService.getInstance().deleteItem(item.getId());
                 break;
             }
         }

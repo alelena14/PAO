@@ -22,19 +22,21 @@ public class Main {
             System.out.println("1. Create a new character");
             System.out.println("2. View all characters");
             System.out.println("3. Choose current character");
-            System.out.println("4. View current character inventory");
+            System.out.println("4. View inventory");
             System.out.println("5. Equip weapon");
             System.out.println("6. Upgrade/Enhance weapon");
             System.out.println("7. Buy healing potion");
             System.out.println("8. Buy a weapon");
-            System.out.println("9. Sell item from inventory");
+            System.out.println("9. Sell item");
             System.out.println("10. Start a battle");
-            System.out.println("11. View battle victories");
+            System.out.println("11. View victories");
             System.out.println("12. View battle types");
             System.out.println("13. View enemy info");
-            System.out.println("14. View current character stats");
+            System.out.println("14. View stats");
             System.out.println("15. Show available character types");
-            System.out.println("16. Exit");
+            System.out.println("16. Delete victories");
+            System.out.println("17. Delete current character");
+            System.out.println("18. Exit");
 
             System.out.print("➡️ Choose an option: ");
             int choice = scanner.nextInt();
@@ -53,9 +55,11 @@ public class Main {
                 case 11 -> service.viewBattleVictories();
                 case 12 -> service.displayBattleTypes();
                 case 13 -> service.getEnemyInfo();
-                case 14 -> Service.getInfo(service.getCurrentCharacter());
+                case 14 -> Service.getInfo(Service.getCurrentCharacter());
                 case 15 -> service.showCharacterInfo();
-                case 16 -> {
+                case 16 -> service.deleteBattleWin();
+                case 17 -> service.deleteCurrentCharacter();
+                case 18 -> {
                     running = false;
                     System.out.println("👋 Goodbye!");
                 }

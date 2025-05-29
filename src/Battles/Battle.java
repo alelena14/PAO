@@ -5,7 +5,6 @@ import Characters.*;
 import java.sql.SQLException;
 import java.util.*;
 
-import Characters.Character;
 import Database.CharacterService;
 import Enemies.*;
 

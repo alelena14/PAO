@@ -3,6 +3,7 @@ package service;
 import Battles.*;
 import Characters.*;
 import Characters.Character;
+import Database.BattlesWonService;
 import Database.CharacterService;
 import Database.InventoryService;
 import Database.ItemService;
@@ -10,10 +11,7 @@ import Enemies.*;
 import Items.*;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Service {
     static CharacterService characterService;
@@ -33,7 +31,7 @@ public class Service {
     public Service() throws SQLException {
     }
 
-    public Character getCurrentCharacter() {
+    public static Character getCurrentCharacter() {
         return currentCharacter;
     }
 
@@ -43,7 +41,11 @@ public class Service {
         currentCharacter = character;
     }
 
-    public static void getInfo(Characters.Character character){
+    public static void getInfo(Characters.Character character) throws SQLException {
+        if (characterService.countCharacters() == 0 || getCurrentCharacter() == null) {
+            System.out.println("❌ No characters.");
+            return;
+        }
         character.getInfo();
         System.out.println("⭐ Level: " + character.getLevel());
         System.out.println("🧫 Exp: " + character.getExp());
@@ -178,6 +180,7 @@ public class Service {
                     System.out.println(i + ": 📦 " + currentItem.getName() + " | 💰 " + currentItem.getValue() + " gold");
                 }
             }
+
         } catch (Exception e) {
             System.out.println("❌ Failed to load inventory.");
             e.printStackTrace();
@@ -490,6 +493,52 @@ public class Service {
         System.out.println("   • Use Speed: consumes 16 speed (attacks for 2 more rounds)");
         System.out.println("   • Gain Speed: restores 20 speed");
         System.out.println("   • Enhance Sword: +12 damage if you have a 'Dragon Scale'");
+    }
+
+    public void deleteBattleWin() throws SQLException {
+        if (characterService.countCharacters() == 0 || getCurrentCharacter() == null) {
+            System.out.println("❌ No characters.");
+            return;
+        }
+
+        Map<String, Integer> battles = BattlesWonService.getInstance().getWinsForCharacter(currentCharacter.getId());
+        List<String> difficulties = new ArrayList<>(battles.keySet());
+
+        this.viewBattleVictories();
+
+        Scanner scanner = new Scanner(System.in);
+        int index = -1;
+
+        while (index < 0 || index >= difficulties.size()) {
+            System.out.print("🔢 Choose the index of the victory to delete (or -1 to cancel): ");
+            try {
+                index = scanner.nextInt();
+                if (index == -1) {
+                    System.out.println("❌ Deletion cancelled.");
+                    return;
+                }
+            } catch (InputMismatchException e) {
+                scanner.nextLine();
+                System.out.println("❗ Please enter a valid number.");
+            }
+        }
+
+        String selectedDifficulty = difficulties.get(index);
+        BattlesWonService.getInstance().deleteBattleWinEntry(currentCharacter.getId(), selectedDifficulty);
+        System.out.println("✅ Victory deleted.");
+    }
+
+    public void deleteCurrentCharacter() throws SQLException {
+        System.out.println(" ⚠️ Are you sure you want to delete this character? ⚠️ (y/n)");
+        Scanner scanner = new Scanner(System.in);
+        String opt = scanner.nextLine();
+        if(opt.equalsIgnoreCase("y")){
+            characterService.deleteCharacter(currentCharacter.getId());
+            currentCharacter = null;
+            System.out.println(" ⚠️ Character deleted.");
+        } else {
+            System.out.println("❌ Character deletion cancelled.");
+        }
     }
 
 

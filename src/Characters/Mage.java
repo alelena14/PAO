@@ -1,6 +1,7 @@
 package Characters;
 
 import Database.InventoryService;
+import Database.ItemService;
 import Enemies.*;
 import Items.*;
 
@@ -70,7 +71,8 @@ public class Mage extends Character {
                 found = true;
                 System.out.println("Book enhanced with Rare Gem!");
                 weapon.setDamage(weapon.getDamage() + 20);
-                inventory.removeItem(item);
+                InventoryService.getInstance().deleteInventoryEntry(this.id, item.getId());
+                ItemService.getInstance().deleteItem(item.getId());
                 break;
             }
         }

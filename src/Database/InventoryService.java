@@ -65,6 +65,12 @@ public class InventoryService {
                             rs.getInt("value"),
                             rs.getInt("healing")
                     ));
+                } else {
+                    items.add(new Item(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getInt("value")
+                    ));
                 }
             }
 
@@ -105,23 +111,22 @@ public class InventoryService {
         }
     }
 
-    // ---------------- LIST ALL ----------------
-    /*public List<String> getAllInventoryEntries() {
-        List<String> entries = new ArrayList<>();
-        String sql = "SELECT * FROM Inventory";
-
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                int characterId = rs.getInt("character_id");
-                int itemId = rs.getInt("item_id");
-                entries.add("Character " + characterId + " owns Item " + itemId);
-            }
-            AuditService.getInstance().logAction("getAllInventoryEntries");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return entries;
-    }*/
+//    public List<String> getAllInventoryEntries() {
+//        List<String> entries = new ArrayList<>();
+//        String sql = "SELECT * FROM Inventory";
+//
+//        try (Statement stmt = connection.createStatement();
+//             ResultSet rs = stmt.executeQuery(sql)) {
+//            while (rs.next()) {
+//                int characterId = rs.getInt("character_id");
+//                int itemId = rs.getInt("item_id");
+//                entries.add("Character " + characterId + " owns Item " + itemId);
+//            }
+//            AuditService.getInstance().logAction("getAllInventoryEntries");
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return entries;
+//    }
 }

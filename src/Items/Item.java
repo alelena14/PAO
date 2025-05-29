@@ -17,6 +17,12 @@ public class Item {
         this.value = value;
     }
 
+    public Item(int id, String name, int value) {
+        this.id = id;
+        this.name = name;
+        this.value = value;
+    }
+
     public int use(Character character) throws SQLException {return 0;}
 
     public String getName() {

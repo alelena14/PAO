@@ -25,7 +25,7 @@ public class AuditService {
     public void logAction(String action) {
         try (FileWriter fw = new FileWriter(fileName, true)) {
             String timestamp = java.time.LocalDateTime.now().toString();
-            fw.write(action + "," + timestamp + "\n");
+            fw.write(action + " - " + timestamp + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }

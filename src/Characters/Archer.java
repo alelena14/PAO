@@ -1,11 +1,11 @@
 package Characters;
 
 import Database.InventoryService;
+import Database.ItemService;
 import Items.*;
 import Enemies.*;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public class Archer extends Character {
     private int energy;
@@ -67,7 +67,8 @@ public class Archer extends Character {
                 found = true;
                 System.out.println("Bow enhanced with Rare Gem!");
                 weapon.setDamage(weapon.getDamage() + 20);
-                inventory.removeItem(item);
+                InventoryService.getInstance().deleteInventoryEntry(this.id, item.getId());
+                ItemService.getInstance().deleteItem(item.getId());
                 break;
             }
         }

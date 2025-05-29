@@ -81,7 +81,7 @@ public class Round {
                                 int op = scanner.nextInt();
                                 HealthPotion hp = potions.get(op - 1);
                                 hp.use(character);
-                                character.getInventory().removeItem(hp);
+                                InventoryService.getInstance().deleteInventoryEntry(character.getId(), hp.getId());
                             } else {
                                 System.out.println("Invalid option, defaulting to Attack.");
                                 character.attack(enemy);
@@ -140,7 +140,7 @@ public class Round {
                                 int op = scanner.nextInt();
                                 HealthPotion hp = potions.get(op - 1);
                                 hp.use(character);
-                                ((Archer) character).getInventory().removeItem(hp);
+                                InventoryService.getInstance().deleteInventoryEntry(character.getId(), hp.getId());
                             } else {
                                 System.out.println("Invalid option, defaulting to Attack.");
                                 character.attack(enemy);
@@ -190,7 +190,7 @@ public class Round {
                                 int op = scanner.nextInt();
                                 HealthPotion hp = potions.get(op - 1);
                                 hp.use(character);
-                                ((Warrior) character).getInventory().removeItem(hp);
+                                InventoryService.getInstance().deleteInventoryEntry(character.getId(), hp.getId());
                             } else {
                                 System.out.println("Invalid option, defaulting to Attack.");
                                 character.attack(enemy);

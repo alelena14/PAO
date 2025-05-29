@@ -7,10 +7,7 @@ import Enemies.*;
 import Battles.*;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class Character {
     protected int id;
@@ -163,8 +160,19 @@ public class Character {
     }
 
     public void printBattlesWon() throws SQLException {
-        for (Map.Entry<String, Integer> entry : BattlesWonService.getInstance().getWinsForCharacter(this.getId()).entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
+        Map<String, Integer> battles = BattlesWonService.getInstance().getWinsForCharacter(this.getId());
+
+        if (battles.isEmpty()) {
+            System.out.println("📭 No victories found.");
+            return;
+        }
+
+        List<String> difficulties = new ArrayList<>(battles.keySet());
+        System.out.println("🏆 Victories:");
+        for (int i = 0; i < difficulties.size(); i++) {
+            String difficulty = difficulties.get(i);
+            int wins = battles.get(difficulty);
+            System.out.printf("%d. Difficulty: %s | Wins: %d\n", i, difficulty, wins);
         }
     }
 
@@ -174,40 +182,12 @@ public class Character {
         } else {
             BattlesWonService.getInstance().addBattleWinEntry(this.getId(), String.valueOf(difficulty), 1);
         }
-        // battlesWon.merge(difficulty, 1, Integer::sum);
     }
 
     /////////////////// Inventory //////////////////////
 
-    public void addItemToInventory(Item item) {
-        inventory.addItem(item);
-        System.out.println(item.getName() + " added to inventory.");
-    }
-
     public void sellItem(Item item){
-        // inventory.removeItem(item);
         this.gold += item.getValue();
-    }
-
-    public void showInventory() {
-        ArrayList<Item> items = inventory.getItems();
-
-        System.out.println("\n🧳 Inventory:");
-        if (items.isEmpty()) {
-            System.out.println(" - empty -");
-            return;
-        }
-
-        for (int i = 0; i < items.size(); i++) {
-            Item currentItem = items.get(i);
-            if (currentItem instanceof HealthPotion hp) {
-                System.out.println(i + ": 🧪 " + hp.getName() + " | Heals: " + hp.getHealAmount() + " ❤️ | 💰 " + hp.getValue() + " gold");
-            } else if (currentItem instanceof Weapon wp) {
-                System.out.println(i + ": 🗡️ " + wp.getName() + " | Level: " + wp.getLevel() + " | Damage: " + wp.getDamage() + " | 💰 " + wp.getValue() + " gold");
-            } else {
-                System.out.println(i + ": 📦 " + currentItem.getName() + " | 💰 " + currentItem.getValue() + " gold");
-            }
-        }
     }
 
     public ArrayList<HealthPotion> showPotions() {
@@ -288,28 +268,12 @@ public class Character {
         this.attack = attack;
     }
 
-    public void setDefense(int defense) {
-        this.defense = defense;
-    }
-
     public void setWeapon(Weapon weapon) {
         this.weapon = weapon;
     }
 
     public void setIsBurned(int isBurned) {
         this.isBurned = isBurned;
-    }
-
-    public void setInventory(Inventory inventory) {
-        this.inventory = inventory;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
-    public void setExp(int exp) {
-        this.exp = exp;
     }
 
     public void setGold(int gold) {

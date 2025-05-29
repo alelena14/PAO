@@ -87,6 +87,12 @@ public class ItemService {
                             rs.getInt("value"),
                             rs.getInt("healing")
                     );
+                } else {
+                    return new Item(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getInt("value")
+                    );
                 }
             }
             AuditService.getInstance().logAction("readItem");
@@ -116,6 +122,14 @@ public class ItemService {
                 stmt.setNull(5, Types.VARCHAR);
                 stmt.setNull(6, Types.INTEGER);
                 stmt.setInt(7, hp.getHealAmount());
+            } else {
+                stmt.setNull(1, Types.VARCHAR);
+                stmt.setInt(2, item.getValue());
+                stmt.setString(3, "item");
+                stmt.setNull(4, Types.INTEGER);
+                stmt.setNull(5, Types.VARCHAR);
+                stmt.setNull(6, Types.INTEGER);
+                stmt.setNull(7, Types.INTEGER);
             }
 
             stmt.setInt(8, item.getId());
@@ -139,36 +153,36 @@ public class ItemService {
         }
     }
 
-    // ---------------- LIST ALL ITEMS ----------------
-    public List<Item> getAllItems() {
-        List<Item> items = new ArrayList<>();
-        String sql = "SELECT * FROM Item";
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            while (rs.next()) {
-                String type = rs.getString("type");
-                if ("weapon".equalsIgnoreCase(type)) {
-                    items.add(new Weapon(
-                            rs.getInt("id"),
-                            rs.getString("name"),
-                            rs.getInt("value"),
-                            rs.getString("weapon_type"),
-                            rs.getInt("damage"),
-                            rs.getInt("level")
-                    ));
-                } else if ("potion".equalsIgnoreCase(type)) {
-                    items.add(new HealthPotion(
-                            rs.getInt("id"),
-                            rs.getInt("value"),
-                            rs.getInt("healing")
-                    ));
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return items;
-    }
+//    // ---------------- LIST ALL ITEMS ----------------
+//    public List<Item> getAllItems() {
+//        List<Item> items = new ArrayList<>();
+//        String sql = "SELECT * FROM Item";
+//        try (Statement stmt = connection.createStatement();
+//             ResultSet rs = stmt.executeQuery(sql)) {
+//
+//            while (rs.next()) {
+//                String type = rs.getString("type");
+//                if ("weapon".equalsIgnoreCase(type)) {
+//                    items.add(new Weapon(
+//                            rs.getInt("id"),
+//                            rs.getString("name"),
+//                            rs.getInt("value"),
+//                            rs.getString("weapon_type"),
+//                            rs.getInt("damage"),
+//                            rs.getInt("level")
+//                    ));
+//                } else if ("potion".equalsIgnoreCase(type)) {
+//                    items.add(new HealthPotion(
+//                            rs.getInt("id"),
+//                            rs.getInt("value"),
+//                            rs.getInt("healing")
+//                    ));
+//                }
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return items;
+//    }
 }
